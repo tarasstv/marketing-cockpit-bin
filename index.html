@@ -1,0 +1,1724 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Маркетинг — Планування + Оптимізатор (Hard)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#101b28;
+      --text:#e8eef7;
+      --muted:#9db0c8;
+      --line:#1f2b3a;
+      --good:#2be4a7;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+      --accent:#6bb7b8;
+      --accent2:#7aa6ff;
+      --shadow: 0 14px 40px rgba(0,0,0,.38);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(107,183,184,.14), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(122,166,255,.10), transparent 60%),
+        radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
+        var(--bg);
+      color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      backdrop-filter: blur(10px);
+      background: rgba(11,15,20,.72);
+      border-bottom:1px solid rgba(31,43,58,.86);
+    }
+    .wrap{ max-width:1500px; margin:0 auto; padding:18px 18px; }
+    .topbar{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:40px; height:40px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.22));
+      border:1px solid rgba(107,183,184,.28);
+      box-shadow: var(--shadow);
+    }
+    h1{ margin:0; font-size:16px; letter-spacing:.2px; }
+    .sub{ margin:2px 0 0; color:var(--muted); font-size:12px; line-height:1.35; max-width:780px; }
+
+    .tabs{
+      display:flex; gap:8px; flex-wrap:wrap;
+      background: rgba(15,22,32,.70);
+      border:1px solid rgba(31,43,58,.86);
+      padding:8px;
+      border-radius: 14px;
+    }
+    .tab{
+      cursor:pointer;
+      user-select:none;
+      padding:9px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(31,43,58,.86);
+      background: rgba(16,27,40,.68);
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.25));
+      color:#071018;
+      border-color: rgba(107,183,184,.35);
+    }
+
+    main{ padding: 18px 0 40px; }
+    .grid{ display:grid; grid-template-columns: 1.15fr .85fr; gap:14px; align-items:start; }
+    @media (max-width: 1100px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(15,22,32,.96), rgba(15,22,32,.76));
+      border: 1px solid rgba(31,43,58,.90);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(31,43,58,.82);
+      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .title{ font-size: 13px; letter-spacing:.2px; font-weight: 900; }
+    .hint{ font-size: 12px; color: var(--muted); max-width: 820px; }
+    .card .bd{ padding: 14px 16px; }
+
+    .controls{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      background: rgba(16,27,40,.50);
+      border:1px solid rgba(31,43,58,.86);
+      padding:10px 12px;
+      border-radius: 14px;
+    }
+    .ctl{ display:flex; gap:8px; align-items:center; font-size:12px; color:var(--muted); }
+    select, input[type="number"], input[type="text"], input[type="password"]{
+      background: rgba(16,27,40,.92);
+      color: var(--text);
+      border: 1px solid rgba(31,43,58,.92);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 13px;
+      outline:none;
+    }
+    input[type="number"]{ width: 120px; }
+    input.small{ width: 98px; }
+    input.tiny{ width: 78px; }
+    .btn{
+      cursor:pointer;
+      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.35));
+      color:#071018;
+      border:1px solid rgba(107,183,184,.35);
+      border-radius: 12px;
+      padding: 9px 12px;
+      font-weight: 900;
+      font-size: 13px;
+    }
+    .btn.secondary{
+      background: rgba(16,27,40,.90);
+      color: var(--text);
+      border:1px solid rgba(31,43,58,.92);
+      font-weight: 800;
+    }
+    .pill{
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(31,43,58,.92);
+      background: rgba(11,15,20,.35);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      white-space:nowrap;
+    }
+
+    /* KPIs */
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(6, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 1200px){ .kpis{ grid-template-columns: repeat(3, minmax(160px, 1fr)); } }
+    @media (max-width: 650px){ .kpis{ grid-template-columns: repeat(2, minmax(160px, 1fr)); } }
+
+    .kpi{
+      background: rgba(16,27,40,.70);
+      border: 1px solid rgba(31,43,58,.86);
+      border-radius: 16px;
+      padding: 12px 12px 10px;
+    }
+    .kpi .label{ font-size: 11px; color: var(--muted); display:flex; justify-content:space-between; gap:10px; }
+    .kpi .value{ font-family: var(--mono); font-size: 18px; font-weight: 900; margin-top: 8px; }
+    .kpi .meta{ font-size: 11px; color: var(--muted); margin-top: 6px; display:flex; gap:8px; flex-wrap:wrap; }
+
+    /* Bars */
+    .progress{
+      background: rgba(31,43,58,.85);
+      border-radius: 999px;
+      overflow:hidden;
+      height: 12px;
+      border:1px solid rgba(31,43,58,.95);
+    }
+    .progress > i{
+      display:block; height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(43,228,167,.95), rgba(107,183,184,.25));
+    }
+    .progress.warn > i{ background: linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,204,102,.30)); }
+    .progress.bad > i{ background: linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,92,122,.30)); }
+
+    /* Table */
+    .tableWrap{ overflow:auto; }
+    table{
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 1200px;
+    }
+    thead th{
+      position: sticky; top:0;
+      background: rgba(15,22,32,.98);
+      border-bottom: 1px solid rgba(31,43,58,.92);
+      padding: 10px 10px;
+      text-align:left;
+      font-size: 11px;
+      color: var(--muted);
+      z-index: 2;
+      white-space: nowrap;
+    }
+    tbody td{
+      border-bottom: 1px solid rgba(31,43,58,.55);
+      padding: 8px 10px;
+      vertical-align: middle;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    tbody tr:hover td{ background: rgba(16,27,40,.35); }
+    tbody tr.total td{
+      background: rgba(16,27,40,.65);
+      font-weight: 900;
+    }
+    .num{ font-family: var(--mono); }
+    .right{ text-align:right; }
+    .center{ text-align:center; }
+
+    .status{
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(31,43,58,.92);
+      background: rgba(11,15,20,.35);
+      color: var(--muted);
+    }
+    .status.good{ color: var(--good); border-color: rgba(43,228,167,.35); }
+    .status.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); }
+    .status.bad{ color: var(--bad); border-color: rgba(255,92,122,.35); }
+
+    /* Funnel tiles (stepped like your screenshot) */
+    .funnelsRow{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(250px, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 1200px){ .funnelsRow{ grid-template-columns: repeat(2, minmax(250px, 1fr)); } }
+    @media (max-width: 650px){ .funnelsRow{ grid-template-columns: 1fr; } }
+
+    .fCard{
+      background: rgba(16,27,40,.55);
+      border:1px solid rgba(31,43,58,.86);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .fTitle{
+      font-weight: 1000;
+      letter-spacing:.2px;
+      text-transform: uppercase;
+      font-size: 18px;
+      text-align:center;
+      border-bottom: 3px solid rgba(232,238,247,.9);
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .stepWrap{
+      position:relative;
+      height: 170px;
+    }
+    .step{
+      position:absolute;
+      bottom: 0;
+      border-radius: 0;
+      border: 2px solid rgba(11,15,20,.65);
+      box-shadow: 0 10px 20px rgba(0,0,0,.20);
+    }
+    .step .cap{
+      position:absolute;
+      top:-18px; left:8px;
+      font-size: 11px;
+      color: rgba(232,238,247,.92);
+      background: rgba(11,15,20,.45);
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(31,43,58,.86);
+      white-space: nowrap;
+    }
+    .step .big{
+      position:absolute;
+      left:10px; bottom:10px;
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 1000;
+      color: rgba(7,16,24,.92);
+      text-shadow: 0 1px 0 rgba(255,255,255,.15);
+    }
+    .step .pct{
+      position:absolute;
+      right:10px; bottom:12px;
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 900;
+      color: rgba(7,16,24,.86);
+      opacity:.85;
+    }
+
+    .miniNote{ font-size:12px; color: var(--muted); line-height:1.45; }
+    textarea{
+      width:100%;
+      min-height: 130px;
+      resize: vertical;
+      background: rgba(16,27,40,.92);
+      color: var(--text);
+      border: 1px solid rgba(31,43,58,.92);
+      border-radius: 16px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      outline:none;
+    }
+
+    .section{ display:none; }
+    .section.active{ display:block; }
+
+    /* Allocation chart */
+    .alloc{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .row{
+      display:flex; align-items:center; gap:10px;
+      padding: 10px;
+      border-radius: 16px;
+      border:1px solid rgba(31,43,58,.86);
+      background: rgba(16,27,40,.55);
+    }
+    .row .name{ width:120px; font-weight:900; }
+    .row .bar{
+      flex:1;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(31,43,58,.85);
+      overflow:hidden;
+      border:1px solid rgba(31,43,58,.95);
+    }
+    .row .bar > i{
+      display:block; height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(122,166,255,.85), rgba(107,183,184,.35));
+    }
+    .row .vals{
+      width: 330px;
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .dangerText{ color: var(--bad); }
+    .goodText{ color: var(--good); }
+    .warnText{ color: var(--warn); }
+
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px){ .twoCol{ grid-template-columns: 1fr; } }
+
+    .glossary{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 900px){ .glossary{ grid-template-columns: 1fr; } }
+    .term{
+      border:1px solid rgba(31,43,58,.86);
+      background: rgba(16,27,40,.55);
+      border-radius: 16px;
+      padding: 10px 12px;
+    }
+    .term b{ font-family: var(--mono); }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+background:radial-gradient(900px 500px at 15% 10%, rgba(107,183,184,.14), transparent 60%),
+radial-gradient(900px 500px at 85% 15%, rgba(122,166,255,.10), transparent 60%),
+radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
+#0b0f14;">
+  <div style="width:min(520px,92vw);background:rgba(15,22,32,.96);border:1px solid rgba(31,43,58,.90);
+  border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.38);padding:18px 18px;">
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
+      <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.22));
+      border:1px solid rgba(107,183,184,.28);"></div>
+      <div>
+        <div style="font-weight:900;letter-spacing:.2px;">Вхід у маркетинг-кокпіт</div>
+        <div style="color:#9db0c8;font-size:12px;line-height:1.35;">Введи пароль. Якщо не знаєш — питай у власника.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+      <input id="gatePass" type="password" placeholder="Пароль" autocomplete="current-password"
+        style="flex:1;min-width:220px;background:rgba(16,27,40,.92);color:#e8eef7;border:1px solid rgba(31,43,58,.92);
+        border-radius:12px;padding:10px 12px;font-size:14px;outline:none;" />
+      <button id="gateBtn" class="btn" style="padding:10px 14px;">Увійти</button>
+      <label style="display:flex;gap:8px;align-items:center;color:#9db0c8;font-size:12px;">
+        <input id="gateRemember" type="checkbox" checked />
+        Запамʼятати на цьому пристрої
+      </label>
+    </div>
+
+    <div id="gateErr" style="margin-top:10px;color:#ff5c7a;font-size:12px;display:none;">
+      Невірний пароль.
+    </div>
+
+    <div style="margin-top:12px;color:#9db0c8;font-size:12px;line-height:1.45;">
+      <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+      border:1px solid rgba(31,43,58,.92);background:rgba(11,15,20,.35);padding:2px 8px;border-radius:999px;">
+        Важливо
+      </span>
+      Це клієнтський пароль (GitHub Pages без серверного захисту). Не клади сюди реальні секрети.
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Маркетинг-кокпіт: план → оптимізація → прогноз</h1>
+          <div class="sub">
+            Фокус: <b>алгоритм</b> бере минулий місяць (бюджети/ліди/якість/конверсії) + план (продажі/бюджет/макс. ліди)
+            і пропонує <b>найдешевший</b> та <b>найнадійніший</b> розподіл лідогенерації по каналах.
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-tab="opt">Оптимізатор</div>
+        <div class="tab" data-tab="pf">План / Факт</div>
+        <div class="tab" data-tab="funnels">Воронки</div>
+        <div class="tab" data-tab="data">Дані</div>
+        <div class="tab" data-tab="glossary">Словник</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- OPTIMIZER -->
+    <section class="section active" id="sec-opt">
+      <div class="grid">
+
+        <div class="card">
+          <div class="hd">
+            <div class="title">Оптимізатор виконання плану</div>
+            <div class="hint">
+              Ввід: план продажів + бюджет + max лідів по каналах. Алгоритм розподіляє ліди так, щоб мінімізувати <span class="pill">CPS</span>
+              з “штрафом ризику” (менше довіряємо каналам з малим обсягом минулого місяця).
+            </div>
+          </div>
+          <div class="bd">
+
+            <div class="controls">
+              <div class="ctl">
+                <span>План продажів (шт.)</span>
+                <input type="number" id="planSales" value="40" min="0"/>
+              </div>
+              <div class="ctl">
+                <span>Місячний бюджет (грн)</span>
+                <input type="number" id="planBudget" value="200000" min="0"/>
+              </div>
+              <div class="ctl">
+                <span>Ризик-штраф</span>
+                <select id="riskMode">
+                  <option value="0">0 — ігнорувати ризик</option>
+                  <option value="1" selected>1 — помірний</option>
+                  <option value="2">2 — жорсткий</option>
+                </select>
+              </div>
+              <div class="ctl">
+                <span>Крок алокації</span>
+                <select id="stepMode">
+                  <option value="continuous" selected>Безперервний (швидко)</option>
+                  <option value="discrete">Дискретний (1 лід крок)</option>
+                </select>
+              </div>
+
+              <button class="btn" id="runOpt">Запустити оптимізацію</button>
+              <button class="btn secondary" id="applyToPlan">Застосувати як План</button>
+              <button class="btn secondary" id="logoutBtn" title="Очистити запамʼятований вхід на цьому пристрої">Вийти</button>
+            </div>
+
+            <div style="height:12px"></div>
+
+            <div class="kpis" id="optKpis"></div>
+
+            <div style="height:12px"></div>
+
+            <div class="card" style="box-shadow:none">
+              <div class="hd" style="border-bottom:none">
+                <div class="title">Рекомендований розподіл по каналах</div>
+                <div class="hint">Показує бюджет, ліди, очікувані кваліфіковані та продажі. Під капотом: мінімізація ефективного CPS.</div>
+              </div>
+              <div class="bd" style="padding-top:0">
+                <div class="alloc" id="allocRows"></div>
+              </div>
+            </div>
+
+            <div style="height:10px"></div>
+            <div class="miniNote" id="optNotes"></div>
+
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="hd">
+            <div class="title">Контрольні прапорці (анти-самообман)</div>
+            <div class="hint">Щоб план не був красивою казкою.</div>
+          </div>
+          <div class="bd">
+            <div class="miniNote">
+              <b>1) Якщо план продажів не виконується навіть теоретично</b> (через max лідів або бюджет) — інструмент скаже прямо.
+              <br/><br/>
+              <b>2) Якщо найкращий канал “тягне ковдру”</b> — це нормально. Погано, якщо канал маленький (мало даних) → ризик-штраф зменшить його частку.
+              <br/><br/>
+              <b>3) Перевірка реальності:</b> якщо в минулому місяці канал дав 20 лідів, а ти ставиш йому max 500 — це фантазія. У вкладці “Дані” є швидка перевірка.
+              <br/><br/>
+              <b>4) Універсальна формула:</b>
+              <span class="pill">CPS ≈ CPL / (Якість × Конверсія в продаж)</span>.
+              Якщо quality або CR падає — CPS летить в космос.
+            </div>
+
+            <div style="height:14px"></div>
+
+            <div class="miniNote">
+              <span class="pill">Порада</span>
+              Зроби один раз правильні дані минулого місяця. Потім цей інструмент реально економить гроші.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PLAN / FACT -->
+    <section class="section" id="sec-pf">
+      <div class="card">
+        <div class="hd">
+          <div class="title">План / Факт (канали)</div>
+          <div class="hint">Мінімум ручного вводу: у “Факт” можна вносити раз на тиждень (4 тижні). Прогноз рахується автоматично.</div>
+        </div>
+        <div class="bd">
+          <div class="controls">
+            <div class="ctl">
+              <span>Режим прогнозу</span>
+              <select id="forecastMode">
+                <option value="runrate" selected>Run-rate (простий)</option>
+                <option value="trend">Trend (вага останнім тижням)</option>
+              </select>
+            </div>
+            <div class="ctl">
+              <span>Тижнів пройшло</span>
+              <select id="weeksDone">
+                <option value="1">1 / 4</option>
+                <option value="2">2 / 4</option>
+                <option value="3">3 / 4</option>
+                <option value="4" selected>4 / 4</option>
+              </select>
+            </div>
+            <div class="ctl">
+              <span>Тижнів у місяці</span>
+              <select id="weeksTotal">
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+            <button class="btn secondary" id="saveLocal">Зберегти</button>
+            <button class="btn secondary" id="loadLocal">Завантажити</button>
+            <button class="btn" id="resetAll">Скинути</button>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="kpis" id="pfKpis"></div>
+
+          <div style="height:12px"></div>
+
+          <div class="tableWrap">
+            <table id="tblPF"></table>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="twoCol">
+            <div>
+              <div class="title" style="font-size:12px;margin-bottom:8px">Експорт / імпорт JSON (для передачі/резерву)</div>
+              <textarea id="jsonBox"></textarea>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+                <button class="btn secondary" id="exportJSON">Експорт</button>
+                <button class="btn secondary" id="importJSON">Імпорт</button>
+                <button class="btn secondary" id="copyJSON">Копіювати</button>
+              </div>
+            </div>
+            <div>
+              <div class="title" style="font-size:12px;margin-bottom:8px">Пояснення логіки</div>
+              <div class="miniNote">
+                <b>Факт кваліфікованих</b> = Σ(Ліди_тижня × Якість%_тижня).<br/>
+                <b>Факт CR</b> = Продажі / Кваліфіковані.<br/>
+                <b>Forecast</b> — два режими:
+                Run-rate (середнє × тижні) або Trend (вага останнім тижням).<br/><br/>
+                Якщо ти вводиш продажі “на око” — CPS стає фейковим. Інструмент не магія.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- FUNNELS -->
+    <section class="section" id="sec-funnels">
+      <div class="card">
+        <div class="hd">
+          <div class="title">Воронки (ступінчасті, як у твоєму прикладі)</div>
+          <div class="hint">Канал → Ліди → Угоди (кваліф.) → Продажі. Окремо: Прогноз (TOTAL) і Ціль.</div>
+        </div>
+        <div class="bd">
+
+          <div class="funnelsRow" id="funnelsTop"></div>
+
+          <div style="height:12px"></div>
+
+          <div class="card" style="box-shadow:none">
+            <div class="hd">
+              <div class="title">Ціль (TOTAL)</div>
+              <div class="hint">Велика “цільова” воронка по плану місяця.</div>
+            </div>
+            <div class="bd">
+              <div class="fCard" id="targetFunnel"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- DATA -->
+    <section class="section" id="sec-data">
+      <div class="card">
+        <div class="hd">
+          <div class="title">Дані (мин. місяць + обмеження поточного плану)</div>
+          <div class="hint">Тут ти вводиш базу для алгоритму. Якщо дані криві — оптимізація буде красиво-кривою.</div>
+        </div>
+        <div class="bd">
+
+          <div class="controls">
+            <div class="ctl">
+              <span>Швидкий пресет</span>
+              <select id="preset">
+                <option value="empty" selected>Порожньо</option>
+                <option value="demo">Демо (приклад)</option>
+              </select>
+            </div>
+            <button class="btn secondary" id="applyPreset">Застосувати</button>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="tableWrap">
+            <table id="tblData"></table>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="miniNote" id="dataChecks"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section class="section" id="sec-glossary">
+      <div class="card">
+        <div class="hd">
+          <div class="title">Словник маркетингових термінів (щоб команда не “вчилася гадати”)</div>
+          <div class="hint">Коротко й людською мовою.</div>
+        </div>
+        <div class="bd">
+          <div class="glossary">
+            <div class="term"><b>Лід</b> — контакт/заявка з потенціалом покупки. Не “клік”.</div>
+            <div class="term"><b>Якість лідів (%)</b> — частка лідів, що реально підходять/кваліфікуються (MQL/SQL).</div>
+            <div class="term"><b>Кваліфікований лід (QL)</b> = Ліди × Якість%.</div>
+            <div class="term"><b>CPL</b> (Cost per Lead) = Бюджет / Ліди.</div>
+            <div class="term"><b>CPQL</b> = Бюджет / Кваліфіковані ліди.</div>
+            <div class="term"><b>CR (конверсія в продаж)</b> — частка кваліфікованих, що стали продажами (або угодами → продаж).</div>
+            <div class="term"><b>Продажі</b> = Кваліфіковані × CR.</div>
+            <div class="term"><b>CPS</b> (Cost per Sale) = Бюджет / Продажі.</div>
+            <div class="term"><b>Max лідів</b> — стеля каналу по лідах на місяць (потужність/інвентар/операційка).</div>
+            <div class="term"><b>Risk-штраф</b> — зменшує долю каналу, якщо минулого місяця було мало даних (вища невизначеність).</div>
+            <div class="term"><b>Run-rate</b> — простий прогноз: “як зараз, так і далі”.</div>
+            <div class="term"><b>Trend</b> — прогноз з більшою вагою останнім тижням.</div>
+          </div>
+
+          <div style="height:12px"></div>
+          <div class="miniNote">
+            <span class="pill">Правило для власника</span>
+            Якщо хтось не може пояснити різницю між CPL і CPS — він не керує маркетингом, він “крутить рекламу”.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+/* =========================
+   Канали та модель
+========================= */
+const CHANNELS = ["Google","Meta","TikTok","ВЛ","KM","Повторні","Інше"];
+const WEEKS = [1,2,3,4];
+
+/* =========================
+   PASSWORD GATE (client-side)
+   - Пароль перевіряємо по SHA-256 хешу (hex), щоб не світити пароль в коді.
+   - Це НЕ серверний захист. Якщо потрібна реальна конфіденційність — роби Cloudflare Access.
+========================= */
+
+/*
+  Як встановити пароль:
+  1) Відкрий у браузері консоль (F12 → Console) і виконай:
+     async function sha256Hex(str){ const enc=new TextEncoder().encode(str); const buf=await crypto.subtle.digest("SHA-256", enc);
+       return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join(""); }
+     sha256Hex("ТВІЙ_ПАРОЛЬ").then(console.log)
+  2) Скопіюй hex і встав у PASS_SHA256_HEX нижче.
+*/
+const PASS_SHA256_HEX = "REPLACE_WITH_YOUR_SHA256_HEX";
+const PASS_STORAGE_KEY = "marketing_gate_ok_v1";
+
+async function sha256Hex(str){
+  const enc = new TextEncoder().encode(str);
+  const buf = await crypto.subtle.digest("SHA-256", enc);
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function showGate(show){
+  const g = document.getElementById("gate");
+  if (!g) return;
+  g.style.display = show ? "flex" : "none";
+}
+async function tryUnlock(pass, remember){
+  const hex = await sha256Hex(pass);
+  const ok = (hex === PASS_SHA256_HEX);
+  const err = document.getElementById("gateErr");
+  if (ok){
+    if (remember) localStorage.setItem(PASS_STORAGE_KEY, "1");
+    showGate(false);
+  } else {
+    if (err) err.style.display = "block";
+  }
+  return ok;
+}
+function initGate(){
+  const saved = localStorage.getItem(PASS_STORAGE_KEY) === "1";
+  if (saved) { showGate(false); return; }
+
+  showGate(true);
+  const btn = document.getElementById("gateBtn");
+  const inp = document.getElementById("gatePass");
+  const rem = document.getElementById("gateRemember");
+  const err = document.getElementById("gateErr");
+
+  const submit = async ()=>{
+    if (err) err.style.display = "none";
+    await tryUnlock(inp.value || "", rem?.checked);
+    inp.value = "";
+  };
+
+  btn?.addEventListener("click", submit);
+  inp?.addEventListener("keydown", (e)=>{ if (e.key==="Enter") submit(); });
+}
+
+/* =========================
+   Helpers
+========================= */
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+function toNum(x){
+  const v = Number(String(x ?? "").replace(",", "."));
+  return isFinite(v) ? v : 0;
+}
+function safeDiv(a,b){ return (b && isFinite(a) && isFinite(b)) ? (a/b) : null; }
+function fmtInt(v){ return v==null ? "—" : Math.round(v).toLocaleString("uk-UA"); }
+function fmtMoney(v){ return v==null ? "—" : Math.round(v).toLocaleString("uk-UA"); }
+function fmt2(v){ return v==null ? "—" : (v).toFixed(2); }
+function fmtPctRatio(v){ return v==null ? "—" : (v*100).toFixed(1)+"%"; }
+
+function defaultState(){
+  const channels = {};
+  for (const name of CHANNELS){
+    channels[name] = {
+      // Дані минулого місяця (для алгоритму)
+      last: {
+        budget: 0,
+        leads: 0,
+        qualityPct: 0,
+        convPct: 0, // конверсія кваліф → продаж
+      },
+      // Обмеження/планування поточного місяця
+      cap: {
+        maxLeads: 0
+      },
+      // План/факт поточного місяця (для дашборду)
+      plan: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
+      weeks: {
+        1:{ budget:0, leads:0, qualityPct:0, sales:0 },
+        2:{ budget:0, leads:0, qualityPct:0, sales:0 },
+        3:{ budget:0, leads:0, qualityPct:0, sales:0 },
+        4:{ budget:0, leads:0, qualityPct:0, sales:0 }
+      }
+    };
+  }
+  return { channels };
+}
+let state = defaultState();
+
+/* =========================
+   Таб-перемикач
+========================= */
+function activateTab(key){
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.toggle("active", t.dataset.tab===key);
+  });
+  const map = { opt:"sec-opt", pf:"sec-pf", funnels:"sec-funnels", data:"sec-data", glossary:"sec-glossary" };
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(map[key]).classList.add("active");
+}
+document.getElementById("tabs").addEventListener("click", (e)=>{
+  const t = e.target.closest(".tab");
+  if (!t) return;
+  activateTab(t.dataset.tab);
+});
+
+/* =========================
+   PF розрахунки
+========================= */
+function sumWeeks(channel, key){
+  let s=0;
+  for (const w of WEEKS) s += toNum(channel.weeks[w][key]);
+  return s;
+}
+function weightedAvg(values){
+  let num=0, den=0;
+  for (let i=0;i<values.length;i++){
+    const w=i+1; num += w*values[i]; den += w;
+  }
+  return den ? num/den : 0;
+}
+function forecastFromWeeks(channel, key, mode, weeksDone, weeksTotal){
+  const series = WEEKS.map(w=>{
+    if (key==="qualified"){
+      const L = toNum(channel.weeks[w].leads);
+      const Qp = toNum(channel.weeks[w].qualityPct)/100;
+      return L*Qp;
+    }
+    return toNum(channel.weeks[w][key]);
+  });
+
+  const done = clamp(toNum(weeksDone),1,4);
+  const total = clamp(toNum(weeksTotal),4,5);
+  const doneSeries = series.slice(0,done);
+  const fact = doneSeries.reduce((a,b)=>a+b,0);
+
+  if (mode==="trend"){
+    const rate = weightedAvg(doneSeries);
+    return rate * total;
+  } else {
+    const perWeek = fact / done;
+    return perWeek * total;
+  }
+}
+function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
+  // PLAN
+  const planB = toNum(ch.plan.budget);
+  const planL = toNum(ch.plan.leads);
+  const planQp = toNum(ch.plan.qualityPct)/100;
+  const planCR = toNum(ch.plan.convPct)/100;
+  const planQL = planL*planQp;
+  const planS  = planQL*planCR;
+
+  const planCPL  = safeDiv(planB, planL);
+  const planCPQL = safeDiv(planB, planQL);
+  const planCPS  = safeDiv(planB, planS);
+
+  // FACT
+  const factB = sumWeeks(ch, "budget");
+  const factL = sumWeeks(ch, "leads");
+  let factQL=0;
+  for (const w of WEEKS){
+    const L=toNum(ch.weeks[w].leads);
+    const Qp=toNum(ch.weeks[w].qualityPct)/100;
+    factQL += L*Qp;
+  }
+  const factS = sumWeeks(ch, "sales");
+
+  const factCPL = safeDiv(factB, factL);
+  const factCPQL= safeDiv(factB, factQL);
+  const factCPS = safeDiv(factB, factS);
+
+  const factQp = safeDiv(factQL, factL);
+  const factCR = safeDiv(factS, factQL);
+
+  // FORECAST
+  const foreB  = forecastFromWeeks(ch, "budget", forecastMode, weeksDone, weeksTotal);
+  const foreL  = forecastFromWeeks(ch, "leads", forecastMode, weeksDone, weeksTotal);
+  const foreQL = forecastFromWeeks(ch, "qualified", forecastMode, weeksDone, weeksTotal);
+  const foreS  = forecastFromWeeks(ch, "sales", forecastMode, weeksDone, weeksTotal);
+
+  const foreCPL = safeDiv(foreB, foreL);
+  const foreCPQL= safeDiv(foreB, foreQL);
+  const foreCPS = safeDiv(foreB, foreS);
+
+  const foreQp = safeDiv(foreQL, foreL);
+  const foreCR = safeDiv(foreS, foreQL);
+
+  return {
+    plan:{B:planB,L:planL,Qp:planQp,QL:planQL,CR:planCR,S:planS,CPL:planCPL,CPQL:planCPQL,CPS:planCPS},
+    fact:{B:factB,L:factL,Qp:factQp,QL:factQL,CR:factCR,S:factS,CPL:factCPL,CPQL:factCPQL,CPS:factCPS},
+    fore:{B:foreB,L:foreL,Qp:foreQp,QL:foreQL,CR:foreCR,S:foreS,CPL:foreCPL,CPQL:foreCPQL,CPS:foreCPS},
+  };
+}
+function computeTotalsPF(perCh){
+  const tot = { plan:{B:0,L:0,QL:0,S:0}, fact:{B:0,L:0,QL:0,S:0}, fore:{B:0,L:0,QL:0,S:0} };
+  for (const name of CHANNELS){
+    const r = perCh[name];
+    tot.plan.B += r.plan.B; tot.plan.L += r.plan.L; tot.plan.QL += r.plan.QL; tot.plan.S += r.plan.S;
+    tot.fact.B += r.fact.B; tot.fact.L += r.fact.L; tot.fact.QL += r.fact.QL; tot.fact.S += r.fact.S;
+    tot.fore.B += r.fore.B; tot.fore.L += r.fore.L; tot.fore.QL += r.fore.QL; tot.fore.S += r.fore.S;
+  }
+  const add = (o)=>{
+    o.CPL = safeDiv(o.B,o.L);
+    o.Qp  = safeDiv(o.QL,o.L);
+    o.CPQL= safeDiv(o.B,o.QL);
+    o.CR  = safeDiv(o.S,o.QL);
+    o.CPS = safeDiv(o.B,o.S);
+  };
+  add(tot.plan); add(tot.fact); add(tot.fore);
+  return tot;
+}
+
+/* =========================
+   Оптимізатор (ГОЛОВНЕ)
+========================= */
+function channelEfficiency(name){
+  const ch = state.channels[name];
+  const lastB = toNum(ch.last.budget);
+  const lastL = toNum(ch.last.leads);
+  const q = clamp(toNum(ch.last.qualityPct)/100, 0, 1);
+  const cr = clamp(toNum(ch.last.convPct)/100, 0, 1);
+  const cpl = safeDiv(lastB, lastL); // грн/лід
+  const salePerLead = q * cr;        // продажів на 1 лід
+  const cps = (cpl!=null && salePerLead>0) ? (cpl / salePerLead) : null; // грн/продаж
+  return { cpl, q, cr, salePerLead, cps, lastL };
+}
+function riskWeightFromMode(mode){
+  const m = String(mode);
+  if (m==="2") return 1.2;
+  if (m==="1") return 0.6;
+  return 0.0;
+}
+function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode}){
+  const riskW = riskWeightFromMode(riskMode);
+  const items = [];
+
+  for (const name of CHANNELS){
+    const eff = channelEfficiency(name);
+    const maxLeads = toNum(state.channels[name].cap.maxLeads);
+    if (!maxLeads || maxLeads<=0) continue;
+    if (eff.cpl==null || eff.cps==null || eff.salePerLead<=0) continue;
+
+    const penalty = 1 + (riskW / Math.sqrt((eff.lastL||0) + 1));
+    const effCps = eff.cps * penalty;
+
+    items.push({
+      name,
+      maxLeads,
+      cpl: eff.cpl,
+      salePerLead: eff.salePerLead,
+      cps: eff.cps,
+      effCps,
+      penalty
+    });
+  }
+
+  if (!items.length){
+    return { ok:false, reason:"Нема валідних каналів для оптимізації. Заповни дані минулого місяця + max лідів." };
+  }
+
+  items.sort((a,b)=>a.effCps - b.effCps);
+
+  const alloc = {};
+  for (const it of items){
+    alloc[it.name] = { leads:0, budget:0, sales:0, qualified:0, eff:it };
+  }
+
+  let budgetLeft = budgetTotal;
+  let salesNeed = salesTarget;
+
+  const allocateLeads = (name, leads)=>{
+    const a = alloc[name];
+    const it = a.eff;
+    const addLeads = Math.max(0, leads);
+    const addBudget = addLeads * it.cpl;
+    const addSales = addLeads * it.salePerLead;
+
+    let qApprox = 0;
+    const chEff = channelEfficiency(name);
+    if (chEff.cr>0) qApprox = chEff.salePerLead / chEff.cr;
+    const addQualified = addLeads * qApprox;
+
+    a.leads += addLeads;
+    a.budget += addBudget;
+    a.sales += addSales;
+    a.qualified += addQualified;
+
+    budgetLeft -= addBudget;
+    salesNeed -= addSales;
+  };
+
+  if (stepMode==="continuous"){
+    for (const it of items){
+      if (budgetLeft<=0 || salesNeed<=0) break;
+      const a = alloc[it.name];
+      const capRemain = it.maxLeads - a.leads;
+      if (capRemain<=0) continue;
+
+      const leadsToHitSales = it.salePerLead>0 ? (salesNeed / it.salePerLead) : Infinity;
+      const leadsToFitBudget = it.cpl>0 ? (budgetLeft / it.cpl) : 0;
+
+      const take = Math.max(0, Math.min(capRemain, leadsToHitSales, leadsToFitBudget));
+      allocateLeads(it.name, take);
+    }
+  } else {
+    while (budgetLeft>0 && salesNeed>0){
+      let chosen = null;
+      for (const it of items){
+        const a = alloc[it.name];
+        if (a.leads >= it.maxLeads) continue;
+        if (budgetLeft < it.cpl) continue;
+        chosen = it; break;
+      }
+      if (!chosen) break;
+      allocateLeads(chosen.name, 1);
+    }
+  }
+
+  let budgetUsed=0, leadsTotal=0, salesTotal=0, qualifiedTotal=0;
+  for (const name in alloc){
+    budgetUsed += alloc[name].budget;
+    leadsTotal += alloc[name].leads;
+    salesTotal += alloc[name].sales;
+    qualifiedTotal += alloc[name].qualified;
+  }
+
+  const cpsTotal = safeDiv(budgetUsed, salesTotal);
+  const shortfall = Math.max(0, salesTarget - salesTotal);
+
+  let maxSalesPossible=0;
+  for (const it of items){
+    maxSalesPossible += it.maxLeads * it.salePerLead;
+  }
+
+  const ok = shortfall<=1e-6;
+  return {
+    ok,
+    items,
+    alloc,
+    summary:{
+      budgetTotal,
+      budgetUsed,
+      budgetLeft,
+      leadsTotal,
+      qualifiedTotal,
+      salesTarget,
+      salesTotal,
+      shortfall,
+      cpsTotal,
+      maxSalesPossible
+    }
+  };
+}
+
+/* =========================
+   Рендер: Дані (last month + caps)
+========================= */
+function buildDataTable(){
+  const tbl = document.getElementById("tblData");
+  tbl.innerHTML = "";
+
+  const thead = document.createElement("thead");
+  const trh = document.createElement("tr");
+  [
+    "Канал",
+    "Мин. місяць: Бюджет",
+    "Мин. місяць: Ліди",
+    "Мин. місяць: Якість (%)",
+    "Мин. місяць: Конверсія в продаж (%)",
+    "Розрах.: CPL",
+    "Розрах.: CPS",
+    "Поточний план: Max лідів"
+  ].forEach(t=>{
+    const th=document.createElement("th");
+    th.textContent=t;
+    trh.appendChild(th);
+  });
+  thead.appendChild(trh);
+  tbl.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  tbl.appendChild(tbody);
+}
+
+function buildPFTable(){
+  const tbl = document.getElementById("tblPF");
+  tbl.innerHTML = "";
+
+  const thead = document.createElement("thead");
+  const trh = document.createElement("tr");
+
+  const cols = [
+    "Канал","Статус",
+    "PLAN: Бюджет","PLAN: Ліди","PLAN: CPL","PLAN: Якість","PLAN: Квал.","PLAN: CR","PLAN: Продажі","PLAN: CPS",
+    "FACT Σ: Бюджет","FACT Σ: Ліди","FACT: CPL","FACT: Якість","FACT: Квал.","FACT: CR","FACT Σ: Продажі","FACT: CPS",
+    "Forecast: Продажі","Forecast: CPS",
+  ];
+  cols.forEach(c=>{
+    const th=document.createElement("th");
+    th.textContent=c;
+    trh.appendChild(th);
+  });
+
+  for (const w of WEEKS){
+    ["B","L","Q%","S"].forEach(x=>{
+      const th=document.createElement("th");
+      th.textContent = `W${w}: ${x==="B"?"Бюджет":x==="L"?"Ліди":x==="Q%"?"Якість%":"Продажі"}`;
+      trh.appendChild(th);
+    });
+  }
+
+  thead.appendChild(trh);
+  tbl.appendChild(thead);
+  tbl.appendChild(document.createElement("tbody"));
+}
+
+function inputCell(value, onChange, opts={}){
+  const inp = document.createElement("input");
+  inp.type = "number";
+  inp.step = opts.step ?? "any";
+  if (opts.min!=null) inp.min = opts.min;
+  if (opts.max!=null) inp.max = opts.max;
+  inp.className = opts.className ?? "small";
+  inp.value = (value ?? 0);
+  inp.addEventListener("input", (e)=> onChange(toNum(e.target.value)));
+  return inp;
+}
+function tdEl(content, cls=""){
+  const td=document.createElement("td");
+  if (cls) td.className=cls;
+  if (content instanceof Node) td.appendChild(content);
+  else td.textContent = content;
+  return td;
+}
+
+function statusFromPF(r, weeksDone, weeksTotal){
+  const done = clamp(toNum(weeksDone),1,4);
+  const total = clamp(toNum(weeksTotal),4,5);
+  const timeShare = done/total;
+
+  const pace = (r.plan.B>0) ? (r.fact.B/r.plan.B) : null;
+  const cplRatio = (r.plan.CPL && r.fact.CPL) ? (r.fact.CPL/r.plan.CPL) : null;
+  const qRatio = (r.plan.Qp>0 && r.fact.Qp!=null) ? (r.fact.Qp/r.plan.Qp) : null;
+  const crRatio = (r.plan.CR>0 && r.fact.CR!=null) ? (r.fact.CR/r.plan.CR) : null;
+
+  let score=0;
+  if (pace!=null){
+    if (pace > timeShare*1.25) score -= 2;
+    else if (pace > timeShare*1.10) score -= 1;
+    else score += 1;
+  }
+  if (cplRatio!=null){
+    if (cplRatio > 1.25) score -= 2;
+    else if (cplRatio > 1.10) score -= 1;
+    else score += 1;
+  }
+  if (qRatio!=null){
+    if (qRatio < 0.70) score -= 2;
+    else if (qRatio < 0.85) score -= 1;
+    else score += 1;
+  }
+  if (crRatio!=null){
+    if (crRatio < 0.70) score -= 2;
+    else if (crRatio < 0.85) score -= 1;
+    else score += 1;
+  }
+  if (score<=-3) return {cls:"bad", text:"RED"};
+  if (score<=-1) return {cls:"warn", text:"YELLOW"};
+  return {cls:"good", text:"GREEN"};
+}
+
+/* =========================
+   Funnels (stepped)
+========================= */
+function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
+  const maxV = Math.max(leads, ql, sales, 1);
+  const hh1 = Math.round(160*(leads/maxV));
+  const hh2 = Math.round(160*(ql/maxV));
+  const hh3 = Math.round(160*(ql/maxV));
+  const hh4 = Math.round(160*(sales/maxV));
+
+  const wrap = document.createElement("div");
+  wrap.className = "fCard";
+
+  const t = document.createElement("div");
+  t.className = "fTitle";
+  t.textContent = title;
+  wrap.appendChild(t);
+
+  const stepWrap = document.createElement("div");
+  stepWrap.className = "stepWrap";
+  wrap.appendChild(stepWrap);
+
+  const s1 = document.createElement("div");
+  s1.className="step";
+  s1.style.left="0%";
+  s1.style.width="40%";
+  s1.style.height = (clamp(hh1,35,170))+"px";
+  s1.style.background = "rgba(205,245,255,.95)";
+  s1.innerHTML = `<div class="cap">К-сть лідів</div><div class="big">${fmtInt(leads)}</div>`;
+  stepWrap.appendChild(s1);
+
+  const s2 = document.createElement("div");
+  s2.className="step";
+  s2.style.left="28%";
+  s2.style.width="28%";
+  s2.style.height = (clamp(hh2,30,160))+"px";
+  s2.style.background = "rgba(160,225,245,.95)";
+  s2.innerHTML = `<div class="cap">Конв. в угоду</div><div class="pct">${(qPct!=null? qPct.toFixed(0):0)}%</div>`;
+  stepWrap.appendChild(s2);
+
+  const s3 = document.createElement("div");
+  s3.className="step";
+  s3.style.left="48%";
+  s3.style.width="22%";
+  s3.style.height = (clamp(hh3,25,150))+"px";
+  s3.style.background = "rgba(120,205,230,.95)";
+  s3.innerHTML = `<div class="cap">К-сть угод</div><div class="big">${fmtInt(ql)}</div>`;
+  stepWrap.appendChild(s3);
+
+  const s4 = document.createElement("div");
+  s4.className="step";
+  s4.style.left="64%";
+  s4.style.width="24%";
+  s4.style.height = (clamp(hh4,22,130))+"px";
+  s4.style.background = "rgba(70,175,205,.95)";
+  s4.innerHTML = `<div class="cap">Конв. в продаж</div><div class="pct">${(crPct!=null? crPct.toFixed(1):0)}%</div>`;
+  stepWrap.appendChild(s4);
+
+  const s5 = document.createElement("div");
+  s5.className="step";
+  s5.style.left="82%";
+  s5.style.width="18%";
+  s5.style.height = (clamp(Math.round(90*(sales/maxV)),18,100))+"px";
+  s5.style.background = "rgba(30,140,175,.95)";
+  s5.innerHTML = `<div class="cap">Продажі</div><div class="big">${fmtInt(sales)}</div>`;
+  stepWrap.appendChild(s5);
+
+  return wrap;
+}
+
+/* =========================
+   Рендери
+========================= */
+function renderData(){
+  const tbl = document.getElementById("tblData");
+  const tbody = tbl.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  let checks = [];
+  for (const name of CHANNELS){
+    const ch = state.channels[name];
+    const eff = channelEfficiency(name);
+    const tr = document.createElement("tr");
+
+    tr.appendChild(tdEl(name));
+    tr.appendChild(tdEl(inputCell(ch.last.budget, v=>{ ch.last.budget=v; renderAll(); }, {className:"small"})));
+    tr.appendChild(tdEl(inputCell(ch.last.leads, v=>{ ch.last.leads=v; renderAll(); }, {className:"small"})));
+    tr.appendChild(tdEl(inputCell(ch.last.qualityPct, v=>{ ch.last.qualityPct=clamp(v,0,100); renderAll(); }, {className:"tiny", min:0, max:100, step:0.1})));
+    tr.appendChild(tdEl(inputCell(ch.last.convPct, v=>{ ch.last.convPct=clamp(v,0,100); renderAll(); }, {className:"tiny", min:0, max:100, step:0.1})));
+
+    tr.appendChild(tdEl(eff.cpl==null ? "—" : fmt2(eff.cpl), "num right"));
+    tr.appendChild(tdEl(eff.cps==null ? "—" : fmt2(eff.cps), "num right"));
+
+    tr.appendChild(tdEl(inputCell(ch.cap.maxLeads, v=>{ ch.cap.maxLeads=Math.max(0,v); renderAll(); }, {className:"small"})));
+
+    tbody.appendChild(tr);
+
+    const maxL = toNum(ch.cap.maxLeads);
+    const lastL = toNum(ch.last.leads);
+    if (maxL>0 && lastL>0 && maxL > lastL*4){
+      checks.push(`• ${name}: max лідів (${fmtInt(maxL)}) > 4× минулого місяця (${fmtInt(lastL)}). Це ризик фантазій.`);
+    }
+  }
+
+  const box = document.getElementById("dataChecks");
+  if (!checks.length){
+    box.innerHTML = `<span class="pill">OK</span> Перевірки пройдені. Якщо max лідів не завищений — оптимізатор буде адекватнішим.`;
+  } else {
+    box.innerHTML = `<span class="pill">Увага</span><br/>` + checks.join("<br/>");
+  }
+}
+
+function renderPF(){
+  const forecastMode = document.getElementById("forecastMode").value;
+  const weeksDone = toNum(document.getElementById("weeksDone").value);
+  const weeksTotal = toNum(document.getElementById("weeksTotal").value);
+
+  const perCh = {};
+  for (const name of CHANNELS){
+    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
+  }
+  const totals = computeTotalsPF(perCh);
+
+  const pfKpis = document.getElementById("pfKpis");
+  pfKpis.innerHTML = "";
+  const items = [
+    {label:"Бюджет", plan:totals.plan.B, fact:totals.fact.B, fore:totals.fore.B, fmt:fmtMoney},
+    {label:"Ліди", plan:totals.plan.L, fact:totals.fact.L, fore:totals.fore.L, fmt:fmtInt},
+    {label:"CPL", plan:totals.plan.CPL, fact:totals.fact.CPL, fore:totals.fore.CPL, fmt:fmt2},
+    {label:"Кваліф.", plan:totals.plan.QL, fact:totals.fact.QL, fore:totals.fore.QL, fmt:fmtInt},
+    {label:"Продажі", plan:totals.plan.S, fact:totals.fact.S, fore:totals.fore.S, fmt:fmtInt},
+    {label:"CPS", plan:totals.plan.CPS, fact:totals.fact.CPS, fore:totals.fore.CPS, fmt:fmt2},
+  ];
+  for (const it of items){
+    const div = document.createElement("div");
+    div.className="kpi";
+    div.innerHTML = `
+      <div class="label"><span>${it.label}</span><span class="pill">PLAN / FACT / Forecast</span></div>
+      <div class="value">${it.fmt(it.plan)} / ${it.fmt(it.fact)} / ${it.fmt(it.fore)}</div>
+      <div class="meta">
+        <span class="pill">ΔFact: ${ (it.plan && it.fact!=null) ? (((it.fact-it.plan)/it.plan)*100).toFixed(1)+"%" : "—" }</span>
+        <span class="pill">ΔFore: ${ (it.plan && it.fore!=null) ? (((it.fore-it.plan)/it.plan)*100).toFixed(1)+"%" : "—" }</span>
+      </div>
+    `;
+    pfKpis.appendChild(div);
+  }
+
+  const tbl = document.getElementById("tblPF");
+  const tbody = tbl.querySelector("tbody");
+  tbody.innerHTML = "";
+
+  for (const name of CHANNELS){
+    const ch = state.channels[name];
+    const r = perCh[name];
+    const st = statusFromPF(r, weeksDone, weeksTotal);
+    const tr = document.createElement("tr");
+
+    tr.appendChild(tdEl(name));
+    const s = document.createElement("span");
+    s.className = "status "+st.cls;
+    s.textContent = st.text;
+    tr.appendChild(tdEl(s));
+
+    tr.appendChild(tdEl(inputCell(ch.plan.budget, v=>{ch.plan.budget=v; renderAll();}, {className:"small"})));
+    tr.appendChild(tdEl(inputCell(ch.plan.leads, v=>{ch.plan.leads=v; renderAll();}, {className:"small"})));
+    tr.appendChild(tdEl(r.plan.CPL==null?"—":fmt2(r.plan.CPL), "num right"));
+    tr.appendChild(tdEl(inputCell(ch.plan.qualityPct, v=>{ch.plan.qualityPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
+    tr.appendChild(tdEl(fmtInt(r.plan.QL), "num right"));
+    tr.appendChild(tdEl(inputCell(ch.plan.convPct, v=>{ch.plan.convPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
+    tr.appendChild(tdEl(fmtInt(r.plan.S), "num right"));
+    tr.appendChild(tdEl(r.plan.CPS==null?"—":fmt2(r.plan.CPS), "num right"));
+
+    tr.appendChild(tdEl(fmtMoney(r.fact.B), "num right"));
+    tr.appendChild(tdEl(fmtInt(r.fact.L), "num right"));
+    tr.appendChild(tdEl(r.fact.CPL==null?"—":fmt2(r.fact.CPL), "num right"));
+    tr.appendChild(tdEl(r.fact.Qp==null?"—":fmtPctRatio(r.fact.Qp), "num right"));
+    tr.appendChild(tdEl(fmtInt(r.fact.QL), "num right"));
+    tr.appendChild(tdEl(r.fact.CR==null?"—":fmtPctRatio(r.fact.CR), "num right"));
+    tr.appendChild(tdEl(fmtInt(r.fact.S), "num right"));
+    tr.appendChild(tdEl(r.fact.CPS==null?"—":fmt2(r.fact.CPS), "num right"));
+
+    tr.appendChild(tdEl(fmtInt(r.fore.S), "num right"));
+    tr.appendChild(tdEl(r.fore.CPS==null?"—":fmt2(r.fore.CPS), "num right"));
+
+    for (const w of WEEKS){
+      const wk = ch.weeks[w];
+      tr.appendChild(tdEl(inputCell(wk.budget, v=>{wk.budget=v; renderAll();}, {className:"small"})));
+      tr.appendChild(tdEl(inputCell(wk.leads, v=>{wk.leads=v; renderAll();}, {className:"small"})));
+      tr.appendChild(tdEl(inputCell(wk.qualityPct, v=>{wk.qualityPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
+      tr.appendChild(tdEl(inputCell(wk.sales, v=>{wk.sales=v; renderAll();}, {className:"small"})));
+    }
+
+    tbody.appendChild(tr);
+  }
+
+  {
+    const tr = document.createElement("tr");
+    tr.className="total";
+    tr.appendChild(tdEl("TOTAL"));
+    tr.appendChild(tdEl("—"));
+
+    tr.appendChild(tdEl(fmtMoney(totals.plan.B),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.plan.L),"num right"));
+    tr.appendChild(tdEl(totals.plan.CPL==null?"—":fmt2(totals.plan.CPL),"num right"));
+    tr.appendChild(tdEl(totals.plan.Qp==null?"—":fmtPctRatio(totals.plan.Qp),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.plan.QL),"num right"));
+    tr.appendChild(tdEl(totals.plan.CR==null?"—":fmtPctRatio(totals.plan.CR),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.plan.S),"num right"));
+    tr.appendChild(tdEl(totals.plan.CPS==null?"—":fmt2(totals.plan.CPS),"num right"));
+
+    tr.appendChild(tdEl(fmtMoney(totals.fact.B),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.fact.L),"num right"));
+    tr.appendChild(tdEl(totals.fact.CPL==null?"—":fmt2(totals.fact.CPL),"num right"));
+    tr.appendChild(tdEl(totals.fact.Qp==null?"—":fmtPctRatio(totals.fact.Qp),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.fact.QL),"num right"));
+    tr.appendChild(tdEl(totals.fact.CR==null?"—":fmtPctRatio(totals.fact.CR),"num right"));
+    tr.appendChild(tdEl(fmtInt(totals.fact.S),"num right"));
+    tr.appendChild(tdEl(totals.fact.CPS==null?"—":fmt2(totals.fact.CPS),"num right"));
+
+    tr.appendChild(tdEl(fmtInt(totals.fore.S),"num right"));
+    tr.appendChild(tdEl(totals.fore.CPS==null?"—":fmt2(totals.fore.CPS),"num right"));
+
+    for (const _ of WEEKS){
+      tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl(""));
+    }
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
+  renderFunnelsFromPlan();
+}
+
+function renderFunnelsFromPlan(){
+  const forecastMode = document.getElementById("forecastMode")?.value || "runrate";
+  const weeksDone = toNum(document.getElementById("weeksDone")?.value || 4);
+  const weeksTotal = toNum(document.getElementById("weeksTotal")?.value || 4);
+
+  const perCh = {};
+  for (const name of CHANNELS){
+    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
+  }
+  const totals = computeTotalsPF(perCh);
+
+  const group = (names, title)=>{
+    let L=0, QL=0, S=0;
+    for (const n of names){
+      L += perCh[n].fact.L;
+      QL += perCh[n].fact.QL;
+      S += perCh[n].fact.S;
+    }
+    const q = safeDiv(QL,L);
+    const cr = safeDiv(S,QL);
+    return makeSteppedFunnel({
+      title,
+      leads: L,
+      ql: QL,
+      sales: S,
+      qPct: (q??0)*100,
+      crPct: (cr??0)*100
+    });
+  };
+
+  const top = document.getElementById("funnelsTop");
+  top.innerHTML = "";
+  top.appendChild(group(["Google","Meta","TikTok"], "САЙТ"));
+  top.appendChild(group(["ВЛ","KM"], "DIRECT"));
+  top.appendChild(group(["Повторні"], "ПОВТОРНІ"));
+
+  top.appendChild(makeSteppedFunnel({
+    title:"ПРОГНОЗ",
+    leads: totals.fore.L,
+    ql: totals.fore.QL,
+    sales: totals.fore.S,
+    qPct: (totals.fore.Qp??0)*100,
+    crPct: (totals.fore.CR??0)*100
+  }));
+
+  const target = document.getElementById("targetFunnel");
+  target.innerHTML = "";
+  target.appendChild(makeSteppedFunnel({
+    title:"ЦІЛЬ",
+    leads: totals.plan.L,
+    ql: totals.plan.QL,
+    sales: totals.plan.S,
+    qPct: (totals.plan.Qp??0)*100,
+    crPct: (totals.plan.CR??0)*100
+  }));
+}
+
+function renderOptimizer(lastResult=null){
+  const budgetTotal = toNum(document.getElementById("planBudget").value);
+  const salesTarget = toNum(document.getElementById("planSales").value);
+  const riskMode = document.getElementById("riskMode").value;
+  const stepMode = document.getElementById("stepMode").value;
+
+  const res = lastResult ?? optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode});
+  const kpiEl = document.getElementById("optKpis");
+  const allocEl = document.getElementById("allocRows");
+  const notesEl = document.getElementById("optNotes");
+
+  kpiEl.innerHTML = "";
+  allocEl.innerHTML = "";
+
+  if (!res.ok && res.reason){
+    notesEl.innerHTML = `<span class="pill">STOP</span> <span class="dangerText"><b>${res.reason}</b></span>`;
+    return res;
+  }
+
+  const s = res.summary;
+  const progress = (s.salesTarget>0) ? (s.salesTotal / s.salesTarget) : 0;
+  const progressCls = progress>=1 ? "" : (progress>=0.85 ? "warn" : "bad");
+
+  const kpis = [
+    {label:"Ціль продажів", val: fmtInt(s.salesTarget), meta:`Очікувано: <b class="num">${fmtInt(s.salesTotal)}</b>`},
+    {label:"Виконання", val: (s.salesTarget>0 ? (progress*100).toFixed(1)+"%" : "—"), meta:`Недобір: <b class="num">${fmtInt(s.shortfall)}</b>`},
+    {label:"Бюджет", val: fmtMoney(s.budgetTotal), meta:`Викор.: <b class="num">${fmtMoney(s.budgetUsed)}</b>`},
+    {label:"CPS (очікув.)", val: (s.cpsTotal==null?"—":fmt2(s.cpsTotal)), meta:`Формула: CPL/(Q×CR)`},
+    {label:"Ліди", val: fmtInt(s.leadsTotal), meta:`Кваліф.: <b class="num">${fmtInt(s.qualifiedTotal)}</b>`},
+    {label:"Теор. max продажів", val: fmtInt(s.maxSalesPossible), meta:`По max лідах (без бюджету)`},
+  ];
+  for (const it of kpis){
+    const div = document.createElement("div");
+    div.className="kpi";
+    div.innerHTML = `
+      <div class="label"><span>${it.label}</span><span class="pill">Оптимізація</span></div>
+      <div class="value">${it.val}</div>
+      <div class="meta">${it.meta}</div>
+    `;
+    kpiEl.appendChild(div);
+  }
+
+  const pbWrap = document.createElement("div");
+  pbWrap.style.margin = "12px 0 0";
+  const pb = document.createElement("div");
+  pb.className = "progress "+progressCls;
+  const i = document.createElement("i");
+  i.style.width = clamp(progress*100,0,120).toFixed(1)+"%";
+  pb.appendChild(i);
+  pbWrap.appendChild(pb);
+  kpiEl.appendChild(pbWrap);
+
+  const totalUsed = Math.max(1, s.budgetUsed);
+  for (const name of CHANNELS){
+    const a = res.alloc[name] || {leads:0,budget:0,sales:0,qualified:0, eff:null};
+    const row = document.createElement("div");
+    row.className="row";
+    row.innerHTML = `
+      <div class="name">${name}</div>
+      <div class="bar"><i style="width:${(a.budget/totalUsed*100).toFixed(1)}%"></i></div>
+      <div class="vals">
+        <span class="pill">Бюджет: ${fmtMoney(a.budget)}</span>
+        <span class="pill">Ліди: ${fmtInt(a.leads)}</span>
+        <span class="pill">Продажі: ${fmtInt(a.sales)}</span>
+        <span class="pill">CPS: ${a.budget>0 && a.sales>0 ? fmt2(a.budget/a.sales) : "—"}</span>
+      </div>
+    `;
+    allocEl.appendChild(row);
+  }
+
+  let msg = "";
+  if (s.shortfall>0){
+    msg += `<span class="pill">Не дотягуємо</span> <span class="dangerText"><b>Очікуваний недобір ${fmtInt(s.shortfall)} продажів.</b></span><br/>`;
+    msg += `Причини: або <b>бюджету мало</b>, або <b>max лідів</b> по каналах занизький, або минуломісячні <b>Q/CR</b> слабкі.<br/><br/>`;
+  } else {
+    msg += `<span class="pill">OK</span> <span class="goodText"><b>План продажів покривається очікувано.</b></span><br/>`;
+  }
+  msg += `Алгоритм ранжує канали по <span class="pill">ефективному CPS</span> (з урахуванням risk-штрафу). Якщо вимикаєш ризик — майже весь бюджет піде в найнижчий CPS канал, навіть якщо він “тонкий” по даних.`;
+  notesEl.innerHTML = msg;
+
+  return res;
+}
+
+/* =========================
+   Apply optimizer result -> PLAN
+========================= */
+function applyOptToPlan(res){
+  for (const name of CHANNELS){
+    const ch = state.channels[name];
+    const a = res.alloc[name];
+    ch.plan.budget = a ? a.budget : 0;
+    ch.plan.leads  = a ? a.leads : 0;
+    ch.plan.qualityPct = toNum(ch.last.qualityPct);
+    ch.plan.convPct    = toNum(ch.last.convPct);
+  }
+}
+
+/* =========================
+   Presets
+========================= */
+function applyPreset(kind){
+  if (kind==="empty"){
+    state = defaultState();
+    return;
+  }
+  if (kind==="demo"){
+    state = defaultState();
+
+    const d = {
+      Google:  {b:90000, l:520, q:32, cr:10, maxL:800},
+      Meta:    {b:65000, l:410, q:28, cr:8,  maxL:700},
+      TikTok:  {b:30000, l:260, q:18, cr:6,  maxL:500},
+      ВЛ:      {b:15000, l:120, q:45, cr:14, maxL:200},
+      KM:      {b:12000, l:90,  q:40, cr:12, maxL:180},
+      Повторні:{b:0,     l:160, q:80, cr:25, maxL:220},
+      Інше:    {b:8000,  l:60,  q:22, cr:7,  maxL:120},
+    };
+
+    for (const name of CHANNELS){
+      const x = d[name] || {b:0,l:0,q:0,cr:0,maxL:0};
+      const ch = state.channels[name];
+      ch.last.budget = x.b;
+      ch.last.leads = x.l;
+      ch.last.qualityPct = x.q;
+      ch.last.convPct = x.cr;
+      ch.cap.maxLeads = x.maxL;
+      ch.plan.budget = 0;
+      ch.plan.leads = 0;
+      ch.plan.qualityPct = x.q;
+      ch.plan.convPct = x.cr;
+    }
+
+    state.channels["Google"].weeks[1] = {budget:22000, leads:120, qualityPct:30, sales:4};
+    state.channels["Google"].weeks[2] = {budget:21000, leads:115, qualityPct:33, sales:4};
+    state.channels["Meta"].weeks[1]   = {budget:16000, leads:95,  qualityPct:26, sales:2};
+    state.channels["Повторні"].weeks[1] = {budget:0, leads:40, qualityPct:80, sales:4};
+  }
+}
+
+/* =========================
+   Local save/load
+========================= */
+function saveToLocal(){ localStorage.setItem("marketing_hard_state_v1", JSON.stringify(state)); }
+function loadFromLocal(){
+  const raw = localStorage.getItem("marketing_hard_state_v1");
+  if (!raw) return;
+  try{ const p = JSON.parse(raw); if (p && p.channels) state=p; }catch(e){}
+}
+
+/* =========================
+   Render ALL
+========================= */
+function renderAll(){
+  renderData();
+  renderPF();
+  renderFunnelsFromPlan();
+  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
+}
+
+/* =========================
+   Init build tables
+========================= */
+buildDataTable();
+buildPFTable();
+loadFromLocal();
+initGate();
+renderAll();
+
+/* =========================
+   Actions
+========================= */
+document.getElementById("applyPreset").addEventListener("click", ()=>{
+  applyPreset(document.getElementById("preset").value);
+  renderAll();
+});
+
+document.getElementById("runOpt").addEventListener("click", ()=>{
+  const res = renderOptimizer(null);
+  window.__lastOpt = res;
+});
+
+document.getElementById("applyToPlan").addEventListener("click", ()=>{
+  const res = window.__lastOpt || optimizeAllocation({
+    budgetTotal: toNum(document.getElementById("planBudget").value),
+    salesTarget: toNum(document.getElementById("planSales").value),
+    riskMode: document.getElementById("riskMode").value,
+    stepMode: document.getElementById("stepMode").value
+  });
+  if (res.reason){ alert(res.reason); return; }
+  applyOptToPlan(res);
+  renderAll();
+  alert("План оновлено з рекомендації оптимізатора.");
+});
+
+// Logout (clear remembered login on this device)
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  localStorage.removeItem(PASS_STORAGE_KEY);
+  showGate(true);
+});
+
+["forecastMode","weeksDone","weeksTotal"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", renderAll);
+});
+
+document.getElementById("saveLocal").addEventListener("click", ()=>{ saveToLocal(); alert("Збережено (localStorage)."); });
+document.getElementById("loadLocal").addEventListener("click", ()=>{ loadFromLocal(); renderAll(); alert("Завантажено (localStorage)."); });
+document.getElementById("resetAll").addEventListener("click", ()=>{
+  if (confirm("Скинути все?")){ state = defaultState(); renderAll(); }
+});
+
+document.getElementById("exportJSON").addEventListener("click", ()=>{
+  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
+});
+document.getElementById("importJSON").addEventListener("click", ()=>{
+  const raw = document.getElementById("jsonBox").value.trim();
+  if (!raw) return;
+  try{
+    const p = JSON.parse(raw);
+    if (p && p.channels){ state = p; renderAll(); alert("Імпортовано."); }
+    else alert("Невірна структура JSON.");
+  }catch(e){ alert("JSON невалідний."); }
+});
+document.getElementById("copyJSON").addEventListener("click", ()=>{
+  const box = document.getElementById("jsonBox");
+  box.select();
+  document.execCommand("copy");
+});
+
+// Initial optimizer compute
+renderOptimizer(null);
+</script>
+</body>
+</html>
