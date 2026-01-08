@@ -225,7 +225,7 @@
     .status.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); }
     .status.bad{ color: var(--bad); border-color: rgba(255,92,122,.35); }
 
-    /* Funnel tiles (stepped like your screenshot) */
+    /* Funnel tiles */
     .funnelsRow{
       display:grid;
       grid-template-columns: repeat(4, minmax(250px, 1fr));
@@ -370,48 +370,55 @@
       padding: 10px 12px;
     }
     .term b{ font-family: var(--mono); }
+
+    /* AUTH GATE */
+    #authGate{
+      position:fixed; inset:0; z-index:99999;
+      background: rgba(5,8,12,.92);
+      backdrop-filter: blur(10px);
+      display:flex; align-items:center; justify-content:center;
+      padding: 18px;
+    }
+    #authCard{
+      width: min(520px, 100%);
+      border:1px solid rgba(31,43,58,.90);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(15,22,32,.96), rgba(15,22,32,.76));
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    #authTitle{ font-weight: 900; font-size: 14px; margin-bottom: 10px; }
+    #authHint{ color: var(--muted); font-size: 12px; line-height: 1.45; margin-bottom: 12px; }
+    #authRow{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    #authPwd{ flex:1; min-width: 220px; }
+    #authErr{ margin-top: 10px; font-size: 12px; color: var(--bad); display:none; }
+    #authOk{ margin-top: 10px; font-size: 12px; color: var(--good); display:none; }
+    #authFooter{ margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.4; }
   </style>
 </head>
+
 <body>
 
-<!-- PASSWORD GATE -->
-<div id="gate" style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
-background:radial-gradient(900px 500px at 15% 10%, rgba(107,183,184,.14), transparent 60%),
-radial-gradient(900px 500px at 85% 15%, rgba(122,166,255,.10), transparent 60%),
-radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
-#0b0f14;">
-  <div style="width:min(520px,92vw);background:rgba(15,22,32,.96);border:1px solid rgba(31,43,58,.90);
-  border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.38);padding:18px 18px;">
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px;">
-      <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.22));
-      border:1px solid rgba(107,183,184,.28);"></div>
-      <div>
-        <div style="font-weight:900;letter-spacing:.2px;">Вхід у маркетинг-кокпіт</div>
-        <div style="color:#9db0c8;font-size:12px;line-height:1.35;">Введи пароль. Якщо не знаєш — питай у власника.</div>
-      </div>
+<!-- PASSWORD GATE (works, but not real server security) -->
+<div id="authGate">
+  <div id="authCard">
+    <div id="authTitle">Доступ за паролем</div>
+    <div id="authHint">
+      Введи пароль. Це працює як “вхід” у браузері (шторка). Для реального захисту потрібен Cloudflare/Netlify/сервер.
     </div>
 
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;">
-      <input id="gatePass" type="password" placeholder="Пароль" autocomplete="current-password"
-        style="flex:1;min-width:220px;background:rgba(16,27,40,.92);color:#e8eef7;border:1px solid rgba(31,43,58,.92);
-        border-radius:12px;padding:10px 12px;font-size:14px;outline:none;" />
-      <button id="gateBtn" class="btn" style="padding:10px 14px;">Увійти</button>
-      <label style="display:flex;gap:8px;align-items:center;color:#9db0c8;font-size:12px;">
-        <input id="gateRemember" type="checkbox" checked />
-        Запамʼятати на цьому пристрої
-      </label>
+    <div id="authRow">
+      <input id="authPwd" type="password" placeholder="Пароль" autocomplete="current-password"/>
+      <button class="btn" id="authBtn">Увійти</button>
+      <button class="btn secondary" id="authLogout" title="Скинути сесію">Вийти</button>
     </div>
 
-    <div id="gateErr" style="margin-top:10px;color:#ff5c7a;font-size:12px;display:none;">
-      Невірний пароль.
-    </div>
+    <div id="authErr">Невірний пароль.</div>
+    <div id="authOk">Ок. Вхід виконано.</div>
 
-    <div style="margin-top:12px;color:#9db0c8;font-size:12px;line-height:1.45;">
-      <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      border:1px solid rgba(31,43,58,.92);background:rgba(11,15,20,.35);padding:2px 8px;border-radius:999px;">
-        Важливо
-      </span>
-      Це клієнтський пароль (GitHub Pages без серверного захисту). Не клади сюди реальні секрети.
+    <div id="authFooter">
+      <span class="pill">Порада</span>
+      Якщо ти хочеш “реально приватно”, скажи — дам інструкцію під Cloudflare Access (це вже 100% по доступу).
     </div>
   </div>
 </div>
@@ -485,7 +492,6 @@ radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
 
               <button class="btn" id="runOpt">Запустити оптимізацію</button>
               <button class="btn secondary" id="applyToPlan">Застосувати як План</button>
-              <button class="btn secondary" id="logoutBtn" title="Очистити запамʼятований вхід на цьому пристрої">Вийти</button>
             </div>
 
             <div style="height:12px"></div>
@@ -710,73 +716,92 @@ radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
 
 <script>
 /* =========================
-   Канали та модель
+   PASSWORD GATE (functional)
+   - Put SHA256(password) into PASS_HASH
+   - Uses sessionStorage to remember for this tab/session
 ========================= */
-const CHANNELS = ["Google","Meta","TikTok","ВЛ","KM","Повторні","Інше"];
-const WEEKS = [1,2,3,4];
+const PASS_HASH = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae"; // <-- replace with your SHA-256(password)
+const AUTH_KEY = "marketing_hard_auth_v1";
 
-/* =========================
-   PASSWORD GATE (client-side)
-   - Пароль перевіряємо по SHA-256 хешу (hex), щоб не світити пароль в коді.
-   - Це НЕ серверний захист. Якщо потрібна реальна конфіденційність — роби Cloudflare Access.
-========================= */
-
-/*
-  Як встановити пароль:
-  1) Відкрий у браузері консоль (F12 → Console) і виконай:
-     async function sha256Hex(str){ const enc=new TextEncoder().encode(str); const buf=await crypto.subtle.digest("SHA-256", enc);
-       return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join(""); }
-     sha256Hex("ТВІЙ_ПАРОЛЬ").then(console.log)
-  2) Скопіюй hex і встав у PASS_SHA256_HEX нижче.
-*/
-const PASS_SHA256_HEX = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae";
-const PASS_STORAGE_KEY = "marketing_gate_ok_v1";
+function $(id){ return document.getElementById(id); }
 
 async function sha256Hex(str){
   const enc = new TextEncoder().encode(str);
   const buf = await crypto.subtle.digest("SHA-256", enc);
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
-function showGate(show){
-  const g = document.getElementById("gate");
-  if (!g) return;
-  g.style.display = show ? "flex" : "none";
+
+function showAuthError(msg){
+  const e = $("authErr");
+  e.textContent = msg || "Невірний пароль.";
+  e.style.display = "block";
+  $("authOk").style.display = "none";
 }
-async function tryUnlock(pass, remember){
-  const hex = await sha256Hex(pass);
-  const ok = (hex === PASS_SHA256_HEX);
-  const err = document.getElementById("gateErr");
-  if (ok){
-    if (remember) localStorage.setItem(PASS_STORAGE_KEY, "1");
-    showGate(false);
-  } else {
-    if (err) err.style.display = "block";
+function showAuthOk(msg){
+  const o = $("authOk");
+  o.textContent = msg || "Ок. Вхід виконано.";
+  o.style.display = "block";
+  $("authErr").style.display = "none";
+}
+
+function isAuthed(){
+  return sessionStorage.getItem(AUTH_KEY) === "1";
+}
+
+function setAuthed(v){
+  if (v) sessionStorage.setItem(AUTH_KEY, "1");
+  else sessionStorage.removeItem(AUTH_KEY);
+}
+
+async function tryLogin(){
+  const pwd = $("authPwd").value || "";
+  if (!pwd.trim()){
+    showAuthError("Введи пароль.");
+    return;
   }
-  return ok;
+  if (!PASS_HASH || PASS_HASH === "PASTE_SHA256_HASH_HERE"){
+    showAuthError("Не задано PASS_HASH у коді. Встав SHA-256 хеш пароля.");
+    return;
+  }
+  const h = await sha256Hex(pwd);
+  if (h === PASS_HASH){
+    setAuthed(true);
+    showAuthOk("Ок. Вхід виконано.");
+    $("authGate").style.display = "none";
+    await initApp();
+  } else {
+    showAuthError("Невірний пароль.");
+  }
 }
-function initGate(){
-  const saved = localStorage.getItem(PASS_STORAGE_KEY) === "1";
-  if (saved) { showGate(false); return; }
 
-  showGate(true);
-  const btn = document.getElementById("gateBtn");
-  const inp = document.getElementById("gatePass");
-  const rem = document.getElementById("gateRemember");
-  const err = document.getElementById("gateErr");
-
-  const submit = async ()=>{
-    if (err) err.style.display = "none";
-    await tryUnlock(inp.value || "", rem?.checked);
-    inp.value = "";
-  };
-
-  btn?.addEventListener("click", submit);
-  inp?.addEventListener("keydown", (e)=>{ if (e.key==="Enter") submit(); });
+function logout(){
+  setAuthed(false);
+  $("authGate").style.display = "flex";
+  $("authPwd").value = "";
+  $("authOk").style.display = "none";
+  $("authErr").style.display = "none";
 }
+
+$("authBtn").addEventListener("click", ()=>{ tryLogin(); });
+$("authLogout").addEventListener("click", ()=>{ logout(); });
+$("authPwd").addEventListener("keydown", (e)=>{
+  if (e.key === "Enter") tryLogin();
+});
 
 /* =========================
-   Helpers
+   APP (all your logic)
+   - Runs only after auth success
 ========================= */
+let state = null;
+
+async function initApp(){
+
+/* =========================
+   Канали та модель
+========================= */
+const CHANNELS = ["Google","Meta","TikTok","ВЛ","KM","Повторні","Інше"];
+const WEEKS = [1,2,3,4];
+
 function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 function toNum(x){
   const v = Number(String(x ?? "").replace(",", "."));
@@ -792,18 +817,15 @@ function defaultState(){
   const channels = {};
   for (const name of CHANNELS){
     channels[name] = {
-      // Дані минулого місяця (для алгоритму)
       last: {
         budget: 0,
         leads: 0,
         qualityPct: 0,
-        convPct: 0, // конверсія кваліф → продаж
+        convPct: 0
       },
-      // Обмеження/планування поточного місяця
       cap: {
         maxLeads: 0
       },
-      // План/факт поточного місяця (для дашборду)
       plan: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
       weeks: {
         1:{ budget:0, leads:0, qualityPct:0, sales:0 },
@@ -815,7 +837,7 @@ function defaultState(){
   }
   return { channels };
 }
-let state = defaultState();
+if (!state) state = defaultState();
 
 /* =========================
    Таб-перемикач
@@ -873,7 +895,6 @@ function forecastFromWeeks(channel, key, mode, weeksDone, weeksTotal){
   }
 }
 function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
-  // PLAN
   const planB = toNum(ch.plan.budget);
   const planL = toNum(ch.plan.leads);
   const planQp = toNum(ch.plan.qualityPct)/100;
@@ -885,7 +906,6 @@ function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
   const planCPQL = safeDiv(planB, planQL);
   const planCPS  = safeDiv(planB, planS);
 
-  // FACT
   const factB = sumWeeks(ch, "budget");
   const factL = sumWeeks(ch, "leads");
   let factQL=0;
@@ -903,7 +923,6 @@ function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
   const factQp = safeDiv(factQL, factL);
   const factCR = safeDiv(factS, factQL);
 
-  // FORECAST
   const foreB  = forecastFromWeeks(ch, "budget", forecastMode, weeksDone, weeksTotal);
   const foreL  = forecastFromWeeks(ch, "leads", forecastMode, weeksDone, weeksTotal);
   const foreQL = forecastFromWeeks(ch, "qualified", forecastMode, weeksDone, weeksTotal);
@@ -922,7 +941,7 @@ function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
     fore:{B:foreB,L:foreL,Qp:foreQp,QL:foreQL,CR:foreCR,S:foreS,CPL:foreCPL,CPQL:foreCPQL,CPS:foreCPS},
   };
 }
-function computeTotalsPF(perCh){
+function computeTotalsPF(perCh, CHANNELS){
   const tot = { plan:{B:0,L:0,QL:0,S:0}, fact:{B:0,L:0,QL:0,S:0}, fore:{B:0,L:0,QL:0,S:0} };
   for (const name of CHANNELS){
     const r = perCh[name];
@@ -942,7 +961,7 @@ function computeTotalsPF(perCh){
 }
 
 /* =========================
-   Оптимізатор (ГОЛОВНЕ)
+   Оптимізатор
 ========================= */
 function channelEfficiency(name){
   const ch = state.channels[name];
@@ -950,9 +969,9 @@ function channelEfficiency(name){
   const lastL = toNum(ch.last.leads);
   const q = clamp(toNum(ch.last.qualityPct)/100, 0, 1);
   const cr = clamp(toNum(ch.last.convPct)/100, 0, 1);
-  const cpl = safeDiv(lastB, lastL); // грн/лід
-  const salePerLead = q * cr;        // продажів на 1 лід
-  const cps = (cpl!=null && salePerLead>0) ? (cpl / salePerLead) : null; // грн/продаж
+  const cpl = safeDiv(lastB, lastL);
+  const salePerLead = q * cr;
+  const cps = (cpl!=null && salePerLead>0) ? (cpl / salePerLead) : null;
   return { cpl, q, cr, salePerLead, cps, lastL };
 }
 function riskWeightFromMode(mode){
@@ -961,7 +980,7 @@ function riskWeightFromMode(mode){
   if (m==="1") return 0.6;
   return 0.0;
 }
-function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode}){
+function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode, CHANNELS}){
   const riskW = riskWeightFromMode(riskMode);
   const items = [];
 
@@ -1084,7 +1103,7 @@ function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode}){
 }
 
 /* =========================
-   Рендер: Дані (last month + caps)
+   Tables builders
 ========================= */
 function buildDataTable(){
   const tbl = document.getElementById("tblData");
@@ -1124,7 +1143,7 @@ function buildPFTable(){
     "Канал","Статус",
     "PLAN: Бюджет","PLAN: Ліди","PLAN: CPL","PLAN: Якість","PLAN: Квал.","PLAN: CR","PLAN: Продажі","PLAN: CPS",
     "FACT Σ: Бюджет","FACT Σ: Ліди","FACT: CPL","FACT: Якість","FACT: Квал.","FACT: CR","FACT Σ: Продажі","FACT: CPS",
-    "Forecast: Продажі","Forecast: CPS",
+    "Forecast: Продажі","Forecast: CPS"
   ];
   cols.forEach(c=>{
     const th=document.createElement("th");
@@ -1205,6 +1224,7 @@ function statusFromPF(r, weeksDone, weeksTotal){
 ========================= */
 function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
   const maxV = Math.max(leads, ql, sales, 1);
+
   const hh1 = Math.round(160*(leads/maxV));
   const hh2 = Math.round(160*(ql/maxV));
   const hh3 = Math.round(160*(ql/maxV));
@@ -1271,7 +1291,7 @@ function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
 }
 
 /* =========================
-   Рендери
+   Renders
 ========================= */
 function renderData(){
   const tbl = document.getElementById("tblData");
@@ -1285,6 +1305,7 @@ function renderData(){
     const tr = document.createElement("tr");
 
     tr.appendChild(tdEl(name));
+
     tr.appendChild(tdEl(inputCell(ch.last.budget, v=>{ ch.last.budget=v; renderAll(); }, {className:"small"})));
     tr.appendChild(tdEl(inputCell(ch.last.leads, v=>{ ch.last.leads=v; renderAll(); }, {className:"small"})));
     tr.appendChild(tdEl(inputCell(ch.last.qualityPct, v=>{ ch.last.qualityPct=clamp(v,0,100); renderAll(); }, {className:"tiny", min:0, max:100, step:0.1})));
@@ -1321,7 +1342,7 @@ function renderPF(){
   for (const name of CHANNELS){
     perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
   }
-  const totals = computeTotalsPF(perCh);
+  const totals = computeTotalsPF(perCh, CHANNELS);
 
   const pfKpis = document.getElementById("pfKpis");
   pfKpis.innerHTML = "";
@@ -1331,7 +1352,7 @@ function renderPF(){
     {label:"CPL", plan:totals.plan.CPL, fact:totals.fact.CPL, fore:totals.fore.CPL, fmt:fmt2},
     {label:"Кваліф.", plan:totals.plan.QL, fact:totals.fact.QL, fore:totals.fore.QL, fmt:fmtInt},
     {label:"Продажі", plan:totals.plan.S, fact:totals.fact.S, fore:totals.fore.S, fmt:fmtInt},
-    {label:"CPS", plan:totals.plan.CPS, fact:totals.fact.CPS, fore:totals.fore.CPS, fmt:fmt2},
+    {label:"CPS", plan:totals.plan.CPS, fact:totals.fact.CPS, fore:totals.fore.CPS, fmt:fmt2}
   ];
   for (const it of items){
     const div = document.createElement("div");
@@ -1395,44 +1416,42 @@ function renderPF(){
     tbody.appendChild(tr);
   }
 
-  {
-    const tr = document.createElement("tr");
-    tr.className="total";
-    tr.appendChild(tdEl("TOTAL"));
-    tr.appendChild(tdEl("—"));
+  const tr = document.createElement("tr");
+  tr.className="total";
+  tr.appendChild(tdEl("TOTAL"));
+  tr.appendChild(tdEl("—"));
 
-    tr.appendChild(tdEl(fmtMoney(totals.plan.B),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.plan.L),"num right"));
-    tr.appendChild(tdEl(totals.plan.CPL==null?"—":fmt2(totals.plan.CPL),"num right"));
-    tr.appendChild(tdEl(totals.plan.Qp==null?"—":fmtPctRatio(totals.plan.Qp),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.plan.QL),"num right"));
-    tr.appendChild(tdEl(totals.plan.CR==null?"—":fmtPctRatio(totals.plan.CR),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.plan.S),"num right"));
-    tr.appendChild(tdEl(totals.plan.CPS==null?"—":fmt2(totals.plan.CPS),"num right"));
+  tr.appendChild(tdEl(fmtMoney(totals.plan.B),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.plan.L),"num right"));
+  tr.appendChild(tdEl(totals.plan.CPL==null?"—":fmt2(totals.plan.CPL),"num right"));
+  tr.appendChild(tdEl(totals.plan.Qp==null?"—":fmtPctRatio(totals.plan.Qp),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.plan.QL),"num right"));
+  tr.appendChild(tdEl(totals.plan.CR==null?"—":fmtPctRatio(totals.plan.CR),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.plan.S),"num right"));
+  tr.appendChild(tdEl(totals.plan.CPS==null?"—":fmt2(totals.plan.CPS),"num right"));
 
-    tr.appendChild(tdEl(fmtMoney(totals.fact.B),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.fact.L),"num right"));
-    tr.appendChild(tdEl(totals.fact.CPL==null?"—":fmt2(totals.fact.CPL),"num right"));
-    tr.appendChild(tdEl(totals.fact.Qp==null?"—":fmtPctRatio(totals.fact.Qp),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.fact.QL),"num right"));
-    tr.appendChild(tdEl(totals.fact.CR==null?"—":fmtPctRatio(totals.fact.CR),"num right"));
-    tr.appendChild(tdEl(fmtInt(totals.fact.S),"num right"));
-    tr.appendChild(tdEl(totals.fact.CPS==null?"—":fmt2(totals.fact.CPS),"num right"));
+  tr.appendChild(tdEl(fmtMoney(totals.fact.B),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.fact.L),"num right"));
+  tr.appendChild(tdEl(totals.fact.CPL==null?"—":fmt2(totals.fact.CPL),"num right"));
+  tr.appendChild(tdEl(totals.fact.Qp==null?"—":fmtPctRatio(totals.fact.Qp),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.fact.QL),"num right"));
+  tr.appendChild(tdEl(totals.fact.CR==null?"—":fmtPctRatio(totals.fact.CR),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.fact.S),"num right"));
+  tr.appendChild(tdEl(totals.fact.CPS==null?"—":fmt2(totals.fact.CPS),"num right"));
 
-    tr.appendChild(tdEl(fmtInt(totals.fore.S),"num right"));
-    tr.appendChild(tdEl(totals.fore.CPS==null?"—":fmt2(totals.fore.CPS),"num right"));
+  tr.appendChild(tdEl(fmtInt(totals.fore.S),"num right"));
+  tr.appendChild(tdEl(totals.fore.CPS==null?"—":fmt2(totals.fore.CPS),"num right"));
 
-    for (const _ of WEEKS){
-      tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl(""));
-    }
-    tbody.appendChild(tr);
+  for (const _ of WEEKS){
+    tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl(""));
   }
+  tbody.appendChild(tr);
 
   document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
-  renderFunnelsFromPlan();
+  renderFunnelsFromPlan(CHANNELS, WEEKS);
 }
 
-function renderFunnelsFromPlan(){
+function renderFunnelsFromPlan(CHANNELS, WEEKS){
   const forecastMode = document.getElementById("forecastMode")?.value || "runrate";
   const weeksDone = toNum(document.getElementById("weeksDone")?.value || 4);
   const weeksTotal = toNum(document.getElementById("weeksTotal")?.value || 4);
@@ -1441,7 +1460,7 @@ function renderFunnelsFromPlan(){
   for (const name of CHANNELS){
     perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
   }
-  const totals = computeTotalsPF(perCh);
+  const totals = computeTotalsPF(perCh, CHANNELS);
 
   const group = (names, title)=>{
     let L=0, QL=0, S=0;
@@ -1464,6 +1483,7 @@ function renderFunnelsFromPlan(){
 
   const top = document.getElementById("funnelsTop");
   top.innerHTML = "";
+
   top.appendChild(group(["Google","Meta","TikTok"], "САЙТ"));
   top.appendChild(group(["ВЛ","KM"], "DIRECT"));
   top.appendChild(group(["Повторні"], "ПОВТОРНІ"));
@@ -1495,7 +1515,7 @@ function renderOptimizer(lastResult=null){
   const riskMode = document.getElementById("riskMode").value;
   const stepMode = document.getElementById("stepMode").value;
 
-  const res = lastResult ?? optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode});
+  const res = lastResult ?? optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode, CHANNELS});
   const kpiEl = document.getElementById("optKpis");
   const allocEl = document.getElementById("allocRows");
   const notesEl = document.getElementById("optNotes");
@@ -1518,7 +1538,7 @@ function renderOptimizer(lastResult=null){
     {label:"Бюджет", val: fmtMoney(s.budgetTotal), meta:`Викор.: <b class="num">${fmtMoney(s.budgetUsed)}</b>`},
     {label:"CPS (очікув.)", val: (s.cpsTotal==null?"—":fmt2(s.cpsTotal)), meta:`Формула: CPL/(Q×CR)`},
     {label:"Ліди", val: fmtInt(s.leadsTotal), meta:`Кваліф.: <b class="num">${fmtInt(s.qualifiedTotal)}</b>`},
-    {label:"Теор. max продажів", val: fmtInt(s.maxSalesPossible), meta:`По max лідах (без бюджету)`},
+    {label:"Теор. max продажів", val: fmtInt(s.maxSalesPossible), meta:`По max лідах (без бюджету)`}
   ];
   for (const it of kpis){
     const div = document.createElement("div");
@@ -1542,6 +1562,7 @@ function renderOptimizer(lastResult=null){
   kpiEl.appendChild(pbWrap);
 
   const totalUsed = Math.max(1, s.budgetUsed);
+
   for (const name of CHANNELS){
     const a = res.alloc[name] || {leads:0,budget:0,sales:0,qualified:0, eff:null};
     const row = document.createElement("div");
@@ -1567,14 +1588,11 @@ function renderOptimizer(lastResult=null){
     msg += `<span class="pill">OK</span> <span class="goodText"><b>План продажів покривається очікувано.</b></span><br/>`;
   }
   msg += `Алгоритм ранжує канали по <span class="pill">ефективному CPS</span> (з урахуванням risk-штрафу). Якщо вимикаєш ризик — майже весь бюджет піде в найнижчий CPS канал, навіть якщо він “тонкий” по даних.`;
-  notesEl.innerHTML = msg;
+  document.getElementById("optNotes").innerHTML = msg;
 
   return res;
 }
 
-/* =========================
-   Apply optimizer result -> PLAN
-========================= */
 function applyOptToPlan(res){
   for (const name of CHANNELS){
     const ch = state.channels[name];
@@ -1596,7 +1614,6 @@ function applyPreset(kind){
   }
   if (kind==="demo"){
     state = defaultState();
-
     const d = {
       Google:  {b:90000, l:520, q:32, cr:10, maxL:800},
       Meta:    {b:65000, l:410, q:28, cr:8,  maxL:700},
@@ -1604,9 +1621,8 @@ function applyPreset(kind){
       ВЛ:      {b:15000, l:120, q:45, cr:14, maxL:200},
       KM:      {b:12000, l:90,  q:40, cr:12, maxL:180},
       Повторні:{b:0,     l:160, q:80, cr:25, maxL:220},
-      Інше:    {b:8000,  l:60,  q:22, cr:7,  maxL:120},
+      Інше:    {b:8000,  l:60,  q:22, cr:7,  maxL:120}
     };
-
     for (const name of CHANNELS){
       const x = d[name] || {b:0,l:0,q:0,cr:0,maxL:0};
       const ch = state.channels[name];
@@ -1620,11 +1636,12 @@ function applyPreset(kind){
       ch.plan.qualityPct = x.q;
       ch.plan.convPct = x.cr;
     }
-
-    state.channels["Google"].weeks[1] = {budget:22000, leads:120, qualityPct:30, sales:4};
-    state.channels["Google"].weeks[2] = {budget:21000, leads:115, qualityPct:33, sales:4};
-    state.channels["Meta"].weeks[1]   = {budget:16000, leads:95,  qualityPct:26, sales:2};
-    state.channels["Повторні"].weeks[1] = {budget:0, leads:40, qualityPct:80, sales:4};
+    state.channels.Google.weeks[1] = {budget:22000, leads:120, qualityPct:30, sales:4};
+    state.channels.Google.weeks[2] = {budget:21000, leads:115, qualityPct:33, sales:4};
+    state.channels.Meta.weeks[1] = {budget:16000, leads:95, qualityPct:26, sales:2};
+    state.channels.Meta.weeks[2] = {budget:17000, leads:105, qualityPct:28, sales:3};
+    state.channels.Повторні.weeks[1] = {budget:0, leads:40, qualityPct:80, sales:8};
+    state.channels.Повторні.weeks[2] = {budget:0, leads:45, qualityPct:80, sales:9};
   }
 }
 
@@ -1644,7 +1661,6 @@ function loadFromLocal(){
 function renderAll(){
   renderData();
   renderPF();
-  renderFunnelsFromPlan();
   document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
 }
 
@@ -1654,8 +1670,8 @@ function renderAll(){
 buildDataTable();
 buildPFTable();
 loadFromLocal();
-initGate();
 renderAll();
+renderOptimizer(null);
 
 /* =========================
    Actions
@@ -1663,19 +1679,19 @@ renderAll();
 document.getElementById("applyPreset").addEventListener("click", ()=>{
   applyPreset(document.getElementById("preset").value);
   renderAll();
+  renderOptimizer(null);
 });
-
 document.getElementById("runOpt").addEventListener("click", ()=>{
   const res = renderOptimizer(null);
   window.__lastOpt = res;
 });
-
 document.getElementById("applyToPlan").addEventListener("click", ()=>{
   const res = window.__lastOpt || optimizeAllocation({
     budgetTotal: toNum(document.getElementById("planBudget").value),
     salesTarget: toNum(document.getElementById("planSales").value),
     riskMode: document.getElementById("riskMode").value,
-    stepMode: document.getElementById("stepMode").value
+    stepMode: document.getElementById("stepMode").value,
+    CHANNELS: CHANNELS
   });
   if (res.reason){ alert(res.reason); return; }
   applyOptToPlan(res);
@@ -1683,20 +1699,14 @@ document.getElementById("applyToPlan").addEventListener("click", ()=>{
   alert("План оновлено з рекомендації оптимізатора.");
 });
 
-// Logout (clear remembered login on this device)
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  localStorage.removeItem(PASS_STORAGE_KEY);
-  showGate(true);
-});
-
 ["forecastMode","weeksDone","weeksTotal"].forEach(id=>{
-  document.getElementById(id).addEventListener("change", renderAll);
+  document.getElementById(id).addEventListener("change", ()=>{ renderAll(); });
 });
 
 document.getElementById("saveLocal").addEventListener("click", ()=>{ saveToLocal(); alert("Збережено (localStorage)."); });
 document.getElementById("loadLocal").addEventListener("click", ()=>{ loadFromLocal(); renderAll(); alert("Завантажено (localStorage)."); });
 document.getElementById("resetAll").addEventListener("click", ()=>{
-  if (confirm("Скинути все?")){ state = defaultState(); renderAll(); }
+  if (confirm("Скинути все?")){ state = defaultState(); renderAll(); renderOptimizer(null); }
 });
 
 document.getElementById("exportJSON").addEventListener("click", ()=>{
@@ -1717,8 +1727,16 @@ document.getElementById("copyJSON").addEventListener("click", ()=>{
   document.execCommand("copy");
 });
 
-// Initial optimizer compute
-renderOptimizer(null);
+} // end initApp
+
+// Boot: if already authed in this session, start app
+if (isAuthed()){
+  $("authGate").style.display = "none";
+  initApp();
+} else {
+  $("authGate").style.display = "flex";
+}
 </script>
+
 </body>
 </html>
