@@ -142,7 +142,6 @@
       white-space:nowrap;
     }
 
-    /* KPIs */
     .kpis{
       display:grid;
       grid-template-columns: repeat(6, minmax(160px, 1fr));
@@ -161,7 +160,6 @@
     .kpi .value{ font-family: var(--mono); font-size: 18px; font-weight: 900; margin-top: 8px; }
     .kpi .meta{ font-size: 11px; color: var(--muted); margin-top: 6px; display:flex; gap:8px; flex-wrap:wrap; }
 
-    /* Bars */
     .progress{
       background: rgba(31,43,58,.85);
       border-radius: 999px;
@@ -177,7 +175,6 @@
     .progress.warn > i{ background: linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,204,102,.30)); }
     .progress.bad > i{ background: linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,92,122,.30)); }
 
-    /* Table */
     .tableWrap{ overflow:auto; }
     table{
       width: 100%;
@@ -225,7 +222,6 @@
     .status.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); }
     .status.bad{ color: var(--bad); border-color: rgba(255,92,122,.35); }
 
-    /* Funnel tiles */
     .funnelsRow{
       display:grid;
       grid-template-columns: repeat(4, minmax(250px, 1fr));
@@ -309,7 +305,6 @@
     .section{ display:none; }
     .section.active{ display:block; }
 
-    /* Allocation chart */
     .alloc{
       display:flex;
       flex-direction:column;
@@ -394,17 +389,25 @@
     #authErr{ margin-top: 10px; font-size: 12px; color: var(--bad); display:none; }
     #authOk{ margin-top: 10px; font-size: 12px; color: var(--good); display:none; }
     #authFooter{ margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* small sheet status */
+    #sheetStatus{
+      margin-top:10px;
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.35;
+    }
   </style>
 </head>
 
 <body>
 
-<!-- PASSWORD GATE (works, but not real server security) -->
 <div id="authGate">
   <div id="authCard">
     <div id="authTitle">Доступ за паролем</div>
     <div id="authHint">
-      Введи пароль. Це працює як “вхід” у браузері (шторка). Для реального захисту потрібен Cloudflare/Netlify/сервер.
+      Введи пароль. Це працює як “вхід” у браузері (шторка).
+      Для реального захисту доступу (тільки команда) — краще Cloudflare Access / Netlify.
     </div>
 
     <div id="authRow">
@@ -415,10 +418,11 @@
 
     <div id="authErr">Невірний пароль.</div>
     <div id="authOk">Ок. Вхід виконано.</div>
+    <div id="sheetStatus"></div>
 
     <div id="authFooter">
       <span class="pill">Порада</span>
-      Якщо ти хочеш “реально приватно”, скажи — дам інструкцію під Cloudflare Access (це вже 100% по доступу).
+      “Пароль в JS” не захищає файл на GitHub Pages. Захист робиться на рівні доступу (Cloudflare/Netlify).
     </div>
   </div>
 </div>
@@ -451,7 +455,6 @@
 <main>
   <div class="wrap">
 
-    <!-- OPTIMIZER -->
     <section class="section active" id="sec-opt">
       <div class="grid">
 
@@ -546,7 +549,6 @@
       </div>
     </section>
 
-    <!-- PLAN / FACT -->
     <section class="section" id="sec-pf">
       <div class="card">
         <div class="hd">
@@ -578,8 +580,10 @@
                 <option value="5">5</option>
               </select>
             </div>
-            <button class="btn secondary" id="saveLocal">Зберегти</button>
-            <button class="btn secondary" id="loadLocal">Завантажити</button>
+            <button class="btn secondary" id="saveLocal">Зберегти (Local)</button>
+            <button class="btn secondary" id="loadLocal">Завантажити (Local)</button>
+            <button class="btn secondary" id="loadGS">Підвантажити (Sheets)</button>
+            <button class="btn secondary" id="saveGS">Зберегти (Sheets)</button>
             <button class="btn" id="resetAll">Скинути</button>
           </div>
 
@@ -620,7 +624,6 @@
       </div>
     </section>
 
-    <!-- FUNNELS -->
     <section class="section" id="sec-funnels">
       <div class="card">
         <div class="hd">
@@ -647,7 +650,6 @@
       </div>
     </section>
 
-    <!-- DATA -->
     <section class="section" id="sec-data">
       <div class="card">
         <div class="hd">
@@ -679,7 +681,6 @@
       </div>
     </section>
 
-    <!-- GLOSSARY -->
     <section class="section" id="sec-glossary">
       <div class="card">
         <div class="hd">
@@ -717,11 +718,16 @@
 <script>
 /* =========================
    PASSWORD GATE (functional)
-   - Put SHA256(password) into PASS_HASH
-   - Uses sessionStorage to remember for this tab/session
 ========================= */
-const PASS_HASH = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae"; // <-- replace with your SHA-256(password)
+const PASS_HASH = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae"; // sha256("Misterbin")
 const AUTH_KEY = "marketing_hard_auth_v1";
+
+/* =========================
+   Google Sheets WebApp (your URL)
+========================= */
+const GS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxoDYDHZayqYfLC3bR_uKF0i1BhfdrxVHu8x43Id9YRVuoE8vW-hdmcHxRR1bJYI9gR4A/exec";
+const GS_AUTOSAVE_MS = 1500;
+const GS_PREFER_REMOTE_ON_BOOT = true;
 
 function $(id){ return document.getElementById(id); }
 
@@ -743,24 +749,74 @@ function showAuthOk(msg){
   o.style.display = "block";
   $("authErr").style.display = "none";
 }
+function setSheetStatus(msg){
+  const el = $("sheetStatus");
+  if (!el) return;
+  el.textContent = msg || "";
+}
 
 function isAuthed(){
   return sessionStorage.getItem(AUTH_KEY) === "1";
 }
-
 function setAuthed(v){
   if (v) sessionStorage.setItem(AUTH_KEY, "1");
   else sessionStorage.removeItem(AUTH_KEY);
 }
 
+/* =========================
+   Google Sheets: JSONP load + no-cors save
+========================= */
+function gsLoadStateViaJSONP(){
+  return new Promise((resolve, reject) => {
+    if (!GS_WEBAPP_URL) { resolve(null); return; }
+    const cbName = "__gs_cb_" + Math.random().toString(16).slice(2);
+    const url = GS_WEBAPP_URL + "?action=get&callback=" + cbName + "&t=" + Date.now();
+
+    window[cbName] = (payload) => {
+      try {
+        delete window[cbName];
+        script.remove();
+        if (payload && payload.ok) resolve(payload.state || null);
+        else reject(new Error(payload?.error || "GS load failed"));
+      } catch (e) { reject(e); }
+    };
+
+    const script = document.createElement("script");
+    script.src = url;
+    script.onerror = () => {
+      delete window[cbName];
+      script.remove();
+      reject(new Error("GS JSONP load error"));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+function gsSaveStateNoCors(stateObj){
+  if (!GS_WEBAPP_URL) return Promise.resolve(false);
+
+  const form = new URLSearchParams();
+  form.set("state", JSON.stringify(stateObj));
+
+  return fetch(GS_WEBAPP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: form.toString()
+  }).then(()=>true).catch(()=>false);
+}
+
+/* =========================
+   Auth
+========================= */
 async function tryLogin(){
   const pwd = $("authPwd").value || "";
   if (!pwd.trim()){
     showAuthError("Введи пароль.");
     return;
   }
-  if (!PASS_HASH || PASS_HASH === "PASTE_SHA256_HASH_HERE"){
-    showAuthError("Не задано PASS_HASH у коді. Встав SHA-256 хеш пароля.");
+  if (!PASS_HASH){
+    showAuthError("Не задано PASS_HASH у коді.");
     return;
   }
   const h = await sha256Hex(pwd);
@@ -789,16 +845,12 @@ $("authPwd").addEventListener("keydown", (e)=>{
 });
 
 /* =========================
-   APP (all your logic)
-   - Runs only after auth success
+   APP
 ========================= */
 let state = null;
 
 async function initApp(){
 
-/* =========================
-   Канали та модель
-========================= */
 const CHANNELS = ["Google","Meta","TikTok","ВЛ","KM","Повторні","Інше"];
 const WEEKS = [1,2,3,4];
 
@@ -817,15 +869,8 @@ function defaultState(){
   const channels = {};
   for (const name of CHANNELS){
     channels[name] = {
-      last: {
-        budget: 0,
-        leads: 0,
-        qualityPct: 0,
-        convPct: 0
-      },
-      cap: {
-        maxLeads: 0
-      },
+      last: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
+      cap: { maxLeads: 0 },
       plan: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
       weeks: {
         1:{ budget:0, leads:0, qualityPct:0, sales:0 },
@@ -839,9 +884,7 @@ function defaultState(){
 }
 if (!state) state = defaultState();
 
-/* =========================
-   Таб-перемикач
-========================= */
+/* Tabs */
 function activateTab(key){
   document.querySelectorAll(".tab").forEach(t=>{
     t.classList.toggle("active", t.dataset.tab===key);
@@ -856,9 +899,7 @@ document.getElementById("tabs").addEventListener("click", (e)=>{
   activateTab(t.dataset.tab);
 });
 
-/* =========================
-   PF розрахунки
-========================= */
+/* PF calc */
 function sumWeeks(channel, key){
   let s=0;
   for (const w of WEEKS) s += toNum(channel.weeks[w][key]);
@@ -960,9 +1001,7 @@ function computeTotalsPF(perCh, CHANNELS){
   return tot;
 }
 
-/* =========================
-   Оптимізатор
-========================= */
+/* Optimizer */
 function channelEfficiency(name){
   const ch = state.channels[name];
   const lastB = toNum(ch.last.budget);
@@ -1102,9 +1141,7 @@ function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode, CHANN
   };
 }
 
-/* =========================
-   Tables builders
-========================= */
+/* Tables builders */
 function buildDataTable(){
   const tbl = document.getElementById("tblData");
   tbl.innerHTML = "";
@@ -1131,7 +1168,6 @@ function buildDataTable(){
   const tbody = document.createElement("tbody");
   tbl.appendChild(tbody);
 }
-
 function buildPFTable(){
   const tbl = document.getElementById("tblPF");
   tbl.innerHTML = "";
@@ -1163,7 +1199,6 @@ function buildPFTable(){
   tbl.appendChild(thead);
   tbl.appendChild(document.createElement("tbody"));
 }
-
 function inputCell(value, onChange, opts={}){
   const inp = document.createElement("input");
   inp.type = "number";
@@ -1182,7 +1217,6 @@ function tdEl(content, cls=""){
   else td.textContent = content;
   return td;
 }
-
 function statusFromPF(r, weeksDone, weeksTotal){
   const done = clamp(toNum(weeksDone),1,4);
   const total = clamp(toNum(weeksTotal),4,5);
@@ -1219,9 +1253,7 @@ function statusFromPF(r, weeksDone, weeksTotal){
   return {cls:"good", text:"GREEN"};
 }
 
-/* =========================
-   Funnels (stepped)
-========================= */
+/* Funnels */
 function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
   const maxV = Math.max(leads, ql, sales, 1);
 
@@ -1290,9 +1322,7 @@ function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
   return wrap;
 }
 
-/* =========================
-   Renders
-========================= */
+/* Renders */
 function renderData(){
   const tbl = document.getElementById("tblData");
   const tbody = tbl.querySelector("tbody");
@@ -1331,6 +1361,62 @@ function renderData(){
   } else {
     box.innerHTML = `<span class="pill">Увага</span><br/>` + checks.join("<br/>");
   }
+}
+
+function renderFunnelsFromPlan(CHANNELS, WEEKS){
+  const forecastMode = document.getElementById("forecastMode")?.value || "runrate";
+  const weeksDone = toNum(document.getElementById("weeksDone")?.value || 4);
+  const weeksTotal = toNum(document.getElementById("weeksTotal")?.value || 4);
+
+  const perCh = {};
+  for (const name of CHANNELS){
+    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
+  }
+  const totals = computeTotalsPF(perCh, CHANNELS);
+
+  const group = (names, title)=>{
+    let L=0, QL=0, S=0;
+    for (const n of names){
+      L += perCh[n].fact.L;
+      QL += perCh[n].fact.QL;
+      S += perCh[n].fact.S;
+    }
+    const q = safeDiv(QL,L);
+    const cr = safeDiv(S,QL);
+    return makeSteppedFunnel({
+      title,
+      leads: L,
+      ql: QL,
+      sales: S,
+      qPct: (q??0)*100,
+      crPct: (cr??0)*100
+    });
+  };
+
+  const top = document.getElementById("funnelsTop");
+  top.innerHTML = "";
+  top.appendChild(group(["Google","Meta","TikTok"], "САЙТ"));
+  top.appendChild(group(["ВЛ","KM"], "DIRECT"));
+  top.appendChild(group(["Повторні"], "ПОВТОРНІ"));
+  top.appendChild(makeSteppedFunnel({
+    title:"ПРОГНОЗ",
+    leads: totals.fore.L,
+    ql: totals.fore.QL,
+    sales: totals.fore.S,
+    qPct: (totals.fore.Qp??0)*100,
+    crPct: (totals.fore.CR??0)*100
+  }));
+
+  const target = document.getElementById("targetFunnel");
+  target.innerHTML = "";
+  target.appendChild(makeSteppedFunnel({
+    title:"ЦІЛЬ",
+    leads: totals.plan.L,
+    ql: totals.plan.QL,
+    sales: totals.plan.S,
+    qPct: (totals.plan.Qp??0)*100,
+    crPct: (totals.plan.CR??0)*100
+  }));
 }
 
 function renderPF(){
@@ -1451,64 +1537,6 @@ function renderPF(){
   renderFunnelsFromPlan(CHANNELS, WEEKS);
 }
 
-function renderFunnelsFromPlan(CHANNELS, WEEKS){
-  const forecastMode = document.getElementById("forecastMode")?.value || "runrate";
-  const weeksDone = toNum(document.getElementById("weeksDone")?.value || 4);
-  const weeksTotal = toNum(document.getElementById("weeksTotal")?.value || 4);
-
-  const perCh = {};
-  for (const name of CHANNELS){
-    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
-  }
-  const totals = computeTotalsPF(perCh, CHANNELS);
-
-  const group = (names, title)=>{
-    let L=0, QL=0, S=0;
-    for (const n of names){
-      L += perCh[n].fact.L;
-      QL += perCh[n].fact.QL;
-      S += perCh[n].fact.S;
-    }
-    const q = safeDiv(QL,L);
-    const cr = safeDiv(S,QL);
-    return makeSteppedFunnel({
-      title,
-      leads: L,
-      ql: QL,
-      sales: S,
-      qPct: (q??0)*100,
-      crPct: (cr??0)*100
-    });
-  };
-
-  const top = document.getElementById("funnelsTop");
-  top.innerHTML = "";
-
-  top.appendChild(group(["Google","Meta","TikTok"], "САЙТ"));
-  top.appendChild(group(["ВЛ","KM"], "DIRECT"));
-  top.appendChild(group(["Повторні"], "ПОВТОРНІ"));
-
-  top.appendChild(makeSteppedFunnel({
-    title:"ПРОГНОЗ",
-    leads: totals.fore.L,
-    ql: totals.fore.QL,
-    sales: totals.fore.S,
-    qPct: (totals.fore.Qp??0)*100,
-    crPct: (totals.fore.CR??0)*100
-  }));
-
-  const target = document.getElementById("targetFunnel");
-  target.innerHTML = "";
-  target.appendChild(makeSteppedFunnel({
-    title:"ЦІЛЬ",
-    leads: totals.plan.L,
-    ql: totals.plan.QL,
-    sales: totals.plan.S,
-    qPct: (totals.plan.Qp??0)*100,
-    crPct: (totals.plan.CR??0)*100
-  }));
-}
-
 function renderOptimizer(lastResult=null){
   const budgetTotal = toNum(document.getElementById("planBudget").value);
   const salesTarget = toNum(document.getElementById("planSales").value);
@@ -1604,9 +1632,7 @@ function applyOptToPlan(res){
   }
 }
 
-/* =========================
-   Presets
-========================= */
+/* Presets */
 function applyPreset(kind){
   if (kind==="empty"){
     state = defaultState();
@@ -1645,9 +1671,7 @@ function applyPreset(kind){
   }
 }
 
-/* =========================
-   Local save/load
-========================= */
+/* Local save/load */
 function saveToLocal(){ localStorage.setItem("marketing_hard_state_v1", JSON.stringify(state)); }
 function loadFromLocal(){
   const raw = localStorage.getItem("marketing_hard_state_v1");
@@ -1655,27 +1679,53 @@ function loadFromLocal(){
   try{ const p = JSON.parse(raw); if (p && p.channels) state=p; }catch(e){}
 }
 
-/* =========================
-   Render ALL
-========================= */
+/* Google Sheets autosave (debounced) */
+let __gsSaveTimer = null;
+function gsAutosaveSchedule(){
+  clearTimeout(__gsSaveTimer);
+  __gsSaveTimer = setTimeout(() => {
+    saveToLocal();
+    gsSaveStateNoCors(state);
+  }, GS_AUTOSAVE_MS);
+}
+
+/* Render ALL */
 function renderAll(){
   renderData();
   renderPF();
   document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
+  gsAutosaveSchedule();
 }
 
-/* =========================
-   Init build tables
-========================= */
+/* Init build tables + boot load */
 buildDataTable();
 buildPFTable();
-loadFromLocal();
+
+setSheetStatus("Звʼязок з Sheets: завантажую…");
+
+let remote = null;
+try {
+  remote = await gsLoadStateViaJSONP();
+  if (remote && remote.channels) {
+    setSheetStatus("Звʼязок з Sheets: OK (state знайдено).");
+  } else {
+    setSheetStatus("Звʼязок з Sheets: OK (порожньо). Перший сейв створить state.");
+  }
+} catch (e) {
+  setSheetStatus("Звʼязок з Sheets: помилка. Працюємо локально.");
+}
+
+if (GS_PREFER_REMOTE_ON_BOOT && remote && remote.channels) {
+  state = remote;
+} else {
+  loadFromLocal();
+  if ((!state || !state.channels) && remote && remote.channels) state = remote;
+}
+
 renderAll();
 renderOptimizer(null);
 
-/* =========================
-   Actions
-========================= */
+/* Actions */
 document.getElementById("applyPreset").addEventListener("click", ()=>{
   applyPreset(document.getElementById("preset").value);
   renderAll();
@@ -1727,9 +1777,29 @@ document.getElementById("copyJSON").addEventListener("click", ()=>{
   document.execCommand("copy");
 });
 
+document.getElementById("loadGS").addEventListener("click", async ()=>{
+  try{
+    const remote = await gsLoadStateViaJSONP();
+    if (remote && remote.channels){
+      state = remote;
+      renderAll();
+      alert("Підвантажено з Google Sheets.");
+    } else {
+      alert("У Sheets поки порожньо (state ще не створено).");
+    }
+  }catch(e){
+    alert("Не вдалося підвантажити з Sheets: " + e.message);
+  }
+});
+
+document.getElementById("saveGS").addEventListener("click", async ()=>{
+  const ok = await gsSaveStateNoCors(state);
+  alert(ok ? "Відправлено в Google Sheets." : "Не вдалося відправити в Sheets.");
+});
+
 } // end initApp
 
-// Boot: if already authed in this session, start app
+/* Boot: if already authed in this session, start app */
 if (isAuthed()){
   $("authGate").style.display = "none";
   initApp();
