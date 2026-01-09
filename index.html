@@ -1,1812 +1,2313 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Маркетинг — Планування + Оптимізатор (Hard)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BINOKL • Маркетинг-ОС v3 • План/Факт/Прогноз • Old+New Optimizers • Google Sheets Sync</title>
+
   <style>
     :root{
-      --bg:#0b0f14;
-      --panel:#0f1620;
-      --panel2:#101b28;
+      --bg:#0b1220;
+      --panel:#0f1a2d;
+      --card:#101e34;
+      --line:rgba(255,255,255,.09);
       --text:#e8eef7;
       --muted:#9db0c8;
-      --line:#1f2b3a;
-      --good:#2be4a7;
+      --good:#42d18d;
       --warn:#ffcc66;
-      --bad:#ff5c7a;
+      --bad:#ff6b7a;
       --accent:#6bb7b8;
-      --accent2:#7aa6ff;
-      --shadow: 0 14px 40px rgba(0,0,0,.38);
-      --radius:18px;
+      --accent2:#8a7dff;
+      --shadow: 0 10px 28px rgba(0,0,0,.35);
+      --r:16px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
       font-family:var(--sans);
-      background:
-        radial-gradient(900px 500px at 15% 10%, rgba(107,183,184,.14), transparent 60%),
-        radial-gradient(900px 500px at 85% 15%, rgba(122,166,255,.10), transparent 60%),
-        radial-gradient(900px 500px at 70% 80%, rgba(255,92,122,.10), transparent 60%),
-        var(--bg);
       color:var(--text);
+      background:
+        radial-gradient(1100px 650px at 12% 8%, rgba(107,183,184,.18), transparent 58%),
+        radial-gradient(900px 520px at 86% 12%, rgba(138,125,255,.14), transparent 55%),
+        linear-gradient(180deg, #07101f 0%, #0b1220 45%, #070e1a 100%);
     }
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter: blur(10px);
-      background: rgba(11,15,20,.72);
-      border-bottom:1px solid rgba(31,43,58,.86);
+    .app{max-width:1700px;margin:0 auto;padding:16px 14px 32px;}
+    .top{
+      display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;
+      margin-bottom:10px;
     }
-    .wrap{ max-width:1500px; margin:0 auto; padding:18px 18px; }
-    .topbar{ display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
-    .brand{ display:flex; gap:12px; align-items:center; }
+    .brand{display:flex;gap:12px;align-items:center;}
     .logo{
-      width:40px; height:40px; border-radius:14px;
-      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.22));
-      border:1px solid rgba(107,183,184,.28);
+      width:44px;height:44px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(107,183,184,.85), rgba(138,125,255,.65));
       box-shadow: var(--shadow);
+      display:grid;place-items:center;font-weight:1000;letter-spacing:.5px;
+      flex:0 0 auto;
     }
-    h1{ margin:0; font-size:16px; letter-spacing:.2px; }
-    .sub{ margin:2px 0 0; color:var(--muted); font-size:12px; line-height:1.35; max-width:780px; }
-
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-      background: rgba(15,22,32,.70);
-      border:1px solid rgba(31,43,58,.86);
-      padding:8px;
-      border-radius: 14px;
+    .title{min-width:260px;max-width:980px}
+    .title h1{margin:0;font-size:clamp(16px, 1.35vw, 19px);line-height:1.15}
+    .title .sub{color:var(--muted);font-size:12.5px;margin-top:4px;line-height:1.35}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .btn{
+      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);
+      padding:10px 12px;border-radius:12px;box-shadow:0 8px 18px rgba(0,0,0,.18);
+      font-weight:1000;font-size:12.5px;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      user-select:none;white-space:nowrap;
     }
+    .btn:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.13)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:rgba(107,183,184,.14);border-color:rgba(107,183,184,.32)}
+    .btn.danger{background:rgba(255,107,122,.12);border-color:rgba(255,107,122,.28)}
+    .btn.small{padding:8px 10px;border-radius:10px;font-size:12px}
+    .pill{
+      display:inline-flex;gap:8px;align-items:center;
+      border:1px solid var(--line);background:rgba(255,255,255,.035);
+      padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted);
+    }
+    .pill strong{color:var(--text);font-weight:1000;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
     .tab{
-      cursor:pointer;
+      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);cursor:pointer;font-weight:1000;font-size:12.5px;color:var(--muted);
       user-select:none;
-      padding:9px 12px;
-      border-radius: 12px;
-      border:1px solid rgba(31,43,58,.86);
-      background: rgba(16,27,40,.68);
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 12px;
     }
-    .tab.active{
-      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.25));
-      color:#071018;
-      border-color: rgba(107,183,184,.35);
-    }
+    .tab.active{color:var(--text);background:rgba(107,183,184,.12);border-color:rgba(107,183,184,.28);}
 
-    main{ padding: 18px 0 40px; }
-    .grid{ display:grid; grid-template-columns: 1.15fr .85fr; gap:14px; align-items:start; }
-    @media (max-width: 1100px){ .grid{ grid-template-columns: 1fr; } }
+    .grid{
+      display:grid;grid-template-columns:minmax(0, 1.2fr) minmax(0, .8fr);
+      gap:12px;margin-top:10px;
+    }
+    @media (max-width:1100px){ .grid{grid-template-columns:1fr;} }
 
     .card{
-      background: linear-gradient(180deg, rgba(15,22,32,.96), rgba(15,22,32,.76));
-      border: 1px solid rgba(31,43,58,.90);
-      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.025));
+      border:1px solid var(--line);
+      border-radius:var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
+      min-width:0;
     }
-    .card .hd{
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(31,43,58,.82);
-      display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+    .hd{
+      padding:12px 14px;border-bottom:1px solid var(--line);
+      display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
     }
-    .title{ font-size: 13px; letter-spacing:.2px; font-weight: 900; }
-    .hint{ font-size: 12px; color: var(--muted); max-width: 820px; }
-    .card .bd{ padding: 14px 16px; }
-
-    .controls{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      background: rgba(16,27,40,.50);
-      border:1px solid rgba(31,43,58,.86);
-      padding:10px 12px;
-      border-radius: 14px;
+    .h{font-weight:1000;letter-spacing:.2px}
+    .hint{color:var(--muted);font-size:12px}
+    .bd{padding:12px 14px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .ctl{
+      display:flex;gap:8px;align-items:center;
+      padding:8px 10px;border-radius:12px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      min-width:fit-content;
     }
-    .ctl{ display:flex; gap:8px; align-items:center; font-size:12px; color:var(--muted); }
-    select, input[type="number"], input[type="text"], input[type="password"]{
-      background: rgba(16,27,40,.92);
-      color: var(--text);
-      border: 1px solid rgba(31,43,58,.92);
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-size: 13px;
-      outline:none;
+    .ctl label{font-size:12px;color:var(--muted);font-weight:900;}
+    .ctl input,.ctl select{
+      background:transparent;border:none;outline:none;color:var(--text);
+      font-weight:1000;font-size:12.5px;min-width:120px;
     }
-    input[type="number"]{ width: 120px; }
-    input.small{ width: 98px; }
-    input.tiny{ width: 78px; }
-    .btn{
-      cursor:pointer;
-      background: linear-gradient(135deg, rgba(107,183,184,.95), rgba(107,183,184,.35));
-      color:#071018;
-      border:1px solid rgba(107,183,184,.35);
-      border-radius: 12px;
-      padding: 9px 12px;
-      font-weight: 900;
-      font-size: 13px;
-    }
-    .btn.secondary{
-      background: rgba(16,27,40,.90);
-      color: var(--text);
-      border:1px solid rgba(31,43,58,.92);
-      font-weight: 800;
-    }
-    .pill{
-      padding: 2px 8px;
-      border-radius: 999px;
-      border:1px solid rgba(31,43,58,.92);
-      background: rgba(11,15,20,.35);
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 11px;
-      white-space:nowrap;
-    }
-
-    .kpis{
-      display:grid;
-      grid-template-columns: repeat(6, minmax(160px, 1fr));
-      gap: 10px;
-    }
-    @media (max-width: 1200px){ .kpis{ grid-template-columns: repeat(3, minmax(160px, 1fr)); } }
-    @media (max-width: 650px){ .kpis{ grid-template-columns: repeat(2, minmax(160px, 1fr)); } }
+    .ctl input[type="number"]{width:140px;min-width:140px}
+    .ctl .suffix{color:var(--muted);font-weight:900;font-size:12px;margin-left:-4px}
 
     .kpi{
-      background: rgba(16,27,40,.70);
-      border: 1px solid rgba(31,43,58,.86);
-      border-radius: 16px;
-      padding: 12px 12px 10px;
-    }
-    .kpi .label{ font-size: 11px; color: var(--muted); display:flex; justify-content:space-between; gap:10px; }
-    .kpi .value{ font-family: var(--mono); font-size: 18px; font-weight: 900; margin-top: 8px; }
-    .kpi .meta{ font-size: 11px; color: var(--muted); margin-top: 6px; display:flex; gap:8px; flex-wrap:wrap; }
-
-    .progress{
-      background: rgba(31,43,58,.85);
-      border-radius: 999px;
-      overflow:hidden;
-      height: 12px;
-      border:1px solid rgba(31,43,58,.95);
-    }
-    .progress > i{
-      display:block; height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(43,228,167,.95), rgba(107,183,184,.25));
-    }
-    .progress.warn > i{ background: linear-gradient(90deg, rgba(255,204,102,.95), rgba(255,204,102,.30)); }
-    .progress.bad > i{ background: linear-gradient(90deg, rgba(255,92,122,.95), rgba(255,92,122,.30)); }
-
-    .tableWrap{ overflow:auto; }
-    table{
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      min-width: 1200px;
-    }
-    thead th{
-      position: sticky; top:0;
-      background: rgba(15,22,32,.98);
-      border-bottom: 1px solid rgba(31,43,58,.92);
-      padding: 10px 10px;
-      text-align:left;
-      font-size: 11px;
-      color: var(--muted);
-      z-index: 2;
-      white-space: nowrap;
-    }
-    tbody td{
-      border-bottom: 1px solid rgba(31,43,58,.55);
-      padding: 8px 10px;
-      vertical-align: middle;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-    tbody tr:hover td{ background: rgba(16,27,40,.35); }
-    tbody tr.total td{
-      background: rgba(16,27,40,.65);
-      font-weight: 900;
-    }
-    .num{ font-family: var(--mono); }
-    .right{ text-align:right; }
-    .center{ text-align:center; }
-
-    .status{
-      font-family: var(--mono);
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      border:1px solid rgba(31,43,58,.92);
-      background: rgba(11,15,20,.35);
-      color: var(--muted);
-    }
-    .status.good{ color: var(--good); border-color: rgba(43,228,167,.35); }
-    .status.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); }
-    .status.bad{ color: var(--bad); border-color: rgba(255,92,122,.35); }
-
-    .funnelsRow{
       display:grid;
-      grid-template-columns: repeat(4, minmax(250px, 1fr));
-      gap: 12px;
-    }
-    @media (max-width: 1200px){ .funnelsRow{ grid-template-columns: repeat(2, minmax(250px, 1fr)); } }
-    @media (max-width: 650px){ .funnelsRow{ grid-template-columns: 1fr; } }
-
-    .fCard{
-      background: rgba(16,27,40,.55);
-      border:1px solid rgba(31,43,58,.86);
-      border-radius: 16px;
-      padding: 12px;
-    }
-    .fTitle{
-      font-weight: 1000;
-      letter-spacing:.2px;
-      text-transform: uppercase;
-      font-size: 18px;
-      text-align:center;
-      border-bottom: 3px solid rgba(232,238,247,.9);
-      padding-bottom: 6px;
-      margin-bottom: 10px;
-    }
-    .stepWrap{
-      position:relative;
-      height: 170px;
-    }
-    .step{
-      position:absolute;
-      bottom: 0;
-      border-radius: 0;
-      border: 2px solid rgba(11,15,20,.65);
-      box-shadow: 0 10px 20px rgba(0,0,0,.20);
-    }
-    .step .cap{
-      position:absolute;
-      top:-18px; left:8px;
-      font-size: 11px;
-      color: rgba(232,238,247,.92);
-      background: rgba(11,15,20,.45);
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid rgba(31,43,58,.86);
-      white-space: nowrap;
-    }
-    .step .big{
-      position:absolute;
-      left:10px; bottom:10px;
-      font-family: var(--mono);
-      font-size: 26px;
-      font-weight: 1000;
-      color: rgba(7,16,24,.92);
-      text-shadow: 0 1px 0 rgba(255,255,255,.15);
-    }
-    .step .pct{
-      position:absolute;
-      right:10px; bottom:12px;
-      font-family: var(--mono);
-      font-size: 16px;
-      font-weight: 900;
-      color: rgba(7,16,24,.86);
-      opacity:.85;
-    }
-
-    .miniNote{ font-size:12px; color: var(--muted); line-height:1.45; }
-    textarea{
-      width:100%;
-      min-height: 130px;
-      resize: vertical;
-      background: rgba(16,27,40,.92);
-      color: var(--text);
-      border: 1px solid rgba(31,43,58,.92);
-      border-radius: 16px;
-      padding: 10px 12px;
-      font-family: var(--mono);
-      font-size: 12px;
-      outline:none;
-    }
-
-    .section{ display:none; }
-    .section.active{ display:block; }
-
-    .alloc{
-      display:flex;
-      flex-direction:column;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap:10px;
     }
-    .row{
-      display:flex; align-items:center; gap:10px;
-      padding: 10px;
-      border-radius: 16px;
-      border:1px solid rgba(31,43,58,.86);
-      background: rgba(16,27,40,.55);
+    .k{
+      padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.12);
+      position:relative;overflow:hidden;min-width:0;
     }
-    .row .name{ width:120px; font-weight:900; }
-    .row .bar{
-      flex:1;
-      height: 14px;
-      border-radius: 999px;
-      background: rgba(31,43,58,.85);
-      overflow:hidden;
-      border:1px solid rgba(31,43,58,.95);
+    .k .t{color:var(--muted);font-size:12px;font-weight:900}
+    .k .v{font-size:20px;font-weight:1000;margin-top:6px;letter-spacing:.2px}
+    .k .s{color:var(--muted);font-size:12px;margin-top:2px;line-height:1.25}
+    .k.good:before,.k.warn:before,.k.bad:before{
+      content:"";position:absolute;inset:-40px -40px auto auto;width:120px;height:120px;border-radius:999px;filter:blur(20px);
+      opacity:.18;
     }
-    .row .bar > i{
-      display:block; height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(122,166,255,.85), rgba(107,183,184,.35));
-    }
-    .row .vals{
-      width: 330px;
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-      font-family: var(--mono);
-      color: var(--muted);
-      font-size: 11px;
-    }
-    .dangerText{ color: var(--bad); }
-    .goodText{ color: var(--good); }
-    .warnText{ color: var(--warn); }
+    .k.good:before{background:var(--good)}
+    .k.warn:before{background:var(--warn)}
+    .k.bad:before{background:var(--bad)}
 
-    .twoCol{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.16);
+      color:var(--muted);
+      font-size:12px;font-weight:1000;
     }
-    @media (max-width: 900px){ .twoCol{ grid-template-columns: 1fr; } }
+    .badge.good{border-color:rgba(66,209,141,.25);background:rgba(66,209,141,.10)}
+    .badge.warn{border-color:rgba(255,204,102,.25);background:rgba(255,204,102,.10)}
+    .badge.bad{border-color:rgba(255,107,122,.25);background:rgba(255,107,122,.10)}
+    .hr{height:1px;background:rgba(255,255,255,.08);margin:10px 0}
+    .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+    @media (max-width:950px){.two{grid-template-columns:1fr}}
+    canvas{width:100%;height:280px;background:rgba(0,0,0,.08);border:1px solid var(--line);border-radius:14px}
+    .mini{font-size:12px;color:var(--muted);line-height:1.35}
+    .noteBox{
+      border:1px solid var(--line);border-radius:14px;background:rgba(0,0,0,.10);
+      padding:12px;color:var(--muted);line-height:1.45;font-size:12.5px;
+    }
+    .noteBox b{color:var(--text)}
 
-    .glossary{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+    .sheetWrap{overflow:auto;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.10)}
+    table.sheet{border-collapse:separate;border-spacing:0;width:100%;min-width:1150px;}
+    .sheet th,.sheet td{border-bottom:1px solid rgba(255,255,255,.07);border-right:1px solid rgba(255,255,255,.06);padding:0;vertical-align:middle}
+    .sheet th{
+      position:sticky;top:0;z-index:2;
+      background:rgba(9,16,30,.92);
+      font-size:12px;color:var(--muted);font-weight:1000;text-align:left;
+      padding:10px 10px;white-space:nowrap;
     }
-    @media (max-width: 900px){ .glossary{ grid-template-columns: 1fr; } }
-    .term{
-      border:1px solid rgba(31,43,58,.86);
-      background: rgba(16,27,40,.55);
-      border-radius: 16px;
-      padding: 10px 12px;
+    .sheet th:first-child{left:0;position:sticky;z-index:3;background:rgba(9,16,30,.95);}
+    .sheet td:first-child{
+      left:0;position:sticky;z-index:1;background:rgba(10,18,32,.95);
+      padding:10px 10px;font-weight:1000;color:var(--text);
+      border-right:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
     }
-    .term b{ font-family: var(--mono); }
-
-    /* AUTH GATE */
-    #authGate{
-      position:fixed; inset:0; z-index:99999;
-      background: rgba(5,8,12,.92);
-      backdrop-filter: blur(10px);
-      display:flex; align-items:center; justify-content:center;
-      padding: 18px;
+    .cell{
+      width:100%;padding:10px 10px;background:transparent;border:0;color:var(--text);
+      font-weight:1000;font-size:12.5px;outline:none;
     }
-    #authCard{
-      width: min(520px, 100%);
-      border:1px solid rgba(31,43,58,.90);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(15,22,32,.96), rgba(15,22,32,.76));
+    .cell::placeholder{color:rgba(157,176,200,.35);font-weight:900}
+    .cell:focus{background:rgba(107,183,184,.10)}
+    .cell.num{text-align:right;font-variant-numeric:tabular-nums;}
+    .toast{
+      position:fixed;left:14px;bottom:14px;
+      max-width:min(720px, calc(100vw - 28px));
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(9,16,30,.90);
       box-shadow: var(--shadow);
-      padding: 16px;
+      color:rgba(232,238,247,.95);
+      font-size:12.5px;line-height:1.35;
+      display:none;z-index:9999;
     }
-    #authTitle{ font-weight: 900; font-size: 14px; margin-bottom: 10px; }
-    #authHint{ color: var(--muted); font-size: 12px; line-height: 1.45; margin-bottom: 12px; }
-    #authRow{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    #authPwd{ flex:1; min-width: 220px; }
-    #authErr{ margin-top: 10px; font-size: 12px; color: var(--bad); display:none; }
-    #authOk{ margin-top: 10px; font-size: 12px; color: var(--good); display:none; }
-    #authFooter{ margin-top: 12px; font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .toast b{color:var(--text)}
 
-    /* small sheet status */
-    #sheetStatus{
-      margin-top:10px;
-      font-size:12px;
-      color: var(--muted);
-      line-height:1.35;
+    .modal{
+      position:fixed;inset:0;display:none;place-items:center;z-index:99999;
+      background:rgba(0,0,0,.55);
+      padding:18px;
+    }
+    .modal .box{
+      width:min(520px, 100%);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(9,16,30,.96);
+      box-shadow: var(--shadow);
+      padding:14px;
+    }
+    .modal h3{margin:0 0 6px 0;font-size:15px}
+    .modal p{margin:0 0 10px 0;color:var(--muted);font-size:12.5px;line-height:1.4}
+    .modal input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+    .modal .actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+    .lockNote{
+      display:inline-flex;gap:8px;align-items:center;
+      color:rgba(255,204,102,.95);
+      border:1px solid rgba(255,204,102,.25);
+      background:rgba(255,204,102,.07);
+      padding:6px 10px;border-radius:999px;
+      font-size:12px;font-weight:1000;
     }
   </style>
 </head>
 
 <body>
-
-<div id="authGate">
-  <div id="authCard">
-    <div id="authTitle">Доступ за паролем</div>
-    <div id="authHint">
-      Введи пароль. Це працює як “вхід” у браузері (шторка).
-      Для реального захисту доступу (тільки команда) — краще Cloudflare Access / Netlify.
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">B</div>
+      <div class="title">
+        <h1>Маркетинг-ОС • План/Факт/Прогноз • Old+New Optimizers • Sync via Google Sheets</h1>
+        <div class="sub">
+          Режим роботи: <b>План місяця</b> → (Old або New оптимізатор) → <b>Факт по тижнях</b> → <b>Оперативна корекція</b>.
+          Дані зберігаються в Google Sheets через твій Apps Script і видимі на всіх гаджетах.
+        </div>
+      </div>
     </div>
 
-    <div id="authRow">
-      <input id="authPwd" type="password" placeholder="Пароль" autocomplete="current-password"/>
-      <button class="btn" id="authBtn">Увійти</button>
-      <button class="btn secondary" id="authLogout" title="Скинути сесію">Вийти</button>
+    <div class="toolbar">
+      <span class="pill"><strong id="monthPill">—</strong><span class="muted">• План/Факт</span></span>
+      <span class="pill"><strong id="cloudPill">Cloud: —</strong><span class="muted" id="cloudSub">—</span></span>
+      <span class="pill"><strong id="editPill">Edit: —</strong><span class="muted">• пароль</span></span>
+      <button class="btn small" id="btnUnlock">Розблокувати редагування</button>
+      <button class="btn small" id="btnLock">Заблокувати</button>
+      <button class="btn small" id="btnCloudPull">Завантажити з Cloud</button>
+      <button class="btn small" id="btnCloudPush">Зберегти в Cloud</button>
+      <button class="btn small" id="btnExport">Експорт JSON</button>
+      <button class="btn small" id="btnImport">Імпорт JSON</button>
+      <button class="btn danger" id="btnReset">Скинути все</button>
+      <button class="btn small" id="btnHelp">Як користуватись</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <!-- DASH -->
+  <section class="grid" id="tab-dash">
+    <div class="card">
+      <div class="hd">
+        <div>
+          <div class="h">Дашборд місяця</div>
+          <div class="hint">План/Факт/Прогноз + funnel + історія місяців</div>
+        </div>
+
+        <div class="row">
+          <div class="ctl">
+            <label>Місяць</label>
+            <select id="monthKey"></select>
+          </div>
+          <div class="ctl">
+            <label>Тижнів</label>
+            <select id="weeksInMonth">
+              <option>4</option>
+              <option>5</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label>KPI</label>
+            <select id="kpiMode">
+              <option value="sales" selected>Продажі</option>
+              <option value="tlead">Цільові ліди</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label>Тиждень</label>
+            <select id="weekSel"></select>
+          </div>
+        </div>
+
+        <div class="row" style="width:100%">
+          <div class="ctl">
+            <label>План продажів</label>
+            <input id="planSales" type="number" min="0" step="1" />
+            <span class="suffix">шт</span>
+          </div>
+          <div class="ctl">
+            <label>План цільових</label>
+            <input id="planTLeads" type="number" min="0" step="1" />
+            <span class="suffix">шт</span>
+          </div>
+          <div class="ctl">
+            <label>План бюджету</label>
+            <input id="planBudget" type="number" min="0" step="100" />
+            <span class="suffix">грн</span>
+          </div>
+
+          <button class="btn primary" id="btnRecalc">Перерахувати</button>
+        </div>
+      </div>
+
+      <div class="bd">
+        <div class="kpi" id="kpis"></div>
+
+        <div class="row" style="margin-top:10px">
+          <span class="badge" id="paceBadge">Темп: —</span>
+          <span class="badge" id="bottleBadge">Вузьке місце: —</span>
+          <span class="badge" id="weekBadge">Тижні: —</span>
+          <span class="lockNote" id="lockNote" style="display:none">🔒 Редагування заблоковано (лише перегляд)</span>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="two">
+          <div>
+            <canvas id="chartMain" width="1100" height="360"></canvas>
+            <div class="mini" style="margin-top:8px">
+              Графік №1: <b>План vs Факт vs Прогноз</b> (KPI + бюджет)
+            </div>
+          </div>
+          <div>
+            <canvas id="chartFunnel" width="1100" height="360"></canvas>
+            <div class="mini" style="margin-top:8px">
+              Графік №2: <b>Воронка</b> (Ліди → Цільові → Продажі) + ефективність (CPL/CQL/CPS)
+            </div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="two">
+          <div>
+            <canvas id="chartChannels" width="1100" height="360"></canvas>
+            <div class="mini" style="margin-top:8px">
+              Графік №3: <b>Канали</b> — де береться KPI (план/факт/прогноз по групах)
+            </div>
+          </div>
+          <div>
+            <canvas id="chartHistory" width="1100" height="360"></canvas>
+            <div class="mini" style="margin-top:8px">
+              Графік №4: <b>Історія по місяцях</b> (KPI і бюджет)
+            </div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="noteBox" id="weeklyConclusionBox"></div>
+      </div>
     </div>
 
-    <div id="authErr">Невірний пароль.</div>
-    <div id="authOk">Ок. Вхід виконано.</div>
-    <div id="sheetStatus"></div>
+    <div class="card">
+      <div class="hd">
+        <div>
+          <div class="h">Оперативна корекція (після факту)</div>
+          <div class="hint">Скажу чесно: “бюджет лікує” чи “продажі лікують”. І дам патч по плану.</div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="btnFixCalc">Розрахувати корекцію</button>
+          <button class="btn small" id="btnFixApply">Застосувати в план</button>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="noteBox" id="fixBox">
+          1) Внеси факт за тиждень у вкладці <b>Ввід</b>.<br>
+          2) Повернись → <b>Розрахувати корекцію</b>.<br>
+          3) Якщо ок — <b>Застосувати</b> (оновить план по каналах).
+        </div>
+        <div class="hr"></div>
+        <div class="mini">
+          Правило: якщо вузьке місце <b>CR у продаж</b> — не “додаємо бюджет”, а фіксимо продажі (швидкість, скрипт, контроль).
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <div id="authFooter">
-      <span class="pill">Порада</span>
-      “Пароль в JS” не захищає файл на GitHub Pages. Захист робиться на рівні доступу (Cloudflare/Netlify).
+  <!-- INPUT -->
+  <section class="card" id="tab-input" style="display:none">
+    <div class="hd">
+      <div>
+        <div class="h">Ввід (легко): план по каналах + факт по тижню</div>
+        <div class="hint">Підтримує Ctrl+V з Google Sheets. Ліва частина — план місяця, права — факт обраного тижня.</div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnPlanOld">Old Optimizer → Запланувати</button>
+        <button class="btn primary" id="btnPlanNew">New Optimizer → Запланувати</button>
+        <button class="btn small" id="btnClearWeek">Обнулити обраний тиждень</button>
+        <button class="btn small" id="btnPasteMode">Вставка: <span id="pasteModeLbl">УВІМК</span></button>
+      </div>
+      <div class="row" style="width:100%">
+        <span class="pill"><strong>План</strong><span class="muted">бюджет, очікуваний CPL/Q/CR, ліміт</span></span>
+        <span class="pill"><strong>Факт</strong><span class="muted">по тижнях: бюджет, ліди, якість, продажі</span></span>
+        <span class="pill"><strong>Канали</strong><span class="muted">Google / Meta / TikTok / Organic / Other</span></span>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="sheetWrap">
+        <table class="sheet" id="sheet"></table>
+      </div>
+      <div class="mini" style="margin-top:10px">
+        Робоче правило: щопонеділка до 12:00 — внесли факт → ти натиснув корекцію → команда працює по одному плану.
+      </div>
+    </div>
+  </section>
+
+  <!-- OLD OPTIMIZER -->
+  <section class="card" id="tab-old" style="display:none">
+    <div class="hd">
+      <div>
+        <div class="h">Старий оптимізатор (Classic / Baseline)</div>
+        <div class="hint">Сухий розрахунок від базових цифр (CPL/Q/CR) з лімітами каналів. Без “магії”.</div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="btnOldPreview">Порахувати</button>
+        <button class="btn small" id="btnOldApply">Застосувати в план</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="noteBox" id="oldBox">Натисни <b>Порахувати</b> — отримаєш розклад бюджету/лідів по каналах.</div>
+      <div class="hr"></div>
+      <canvas id="chartOld" width="1100" height="360"></canvas>
+    </div>
+  </section>
+
+  <!-- NEW OPTIMIZER -->
+  <section class="card" id="tab-new" style="display:none">
+    <div class="hd">
+      <div>
+        <div class="h">Новий оптимізатор (Operational / Current)</div>
+        <div class="hint">Планування від реальних результатів: бере ефективність з минулого місяця + підмішує базу. Дає “робочий план”.</div>
+      </div>
+      <div class="row">
+        <div class="ctl">
+          <label>Місяць-база</label>
+          <select id="newBaseMonth"></select>
+        </div>
+        <div class="ctl">
+          <label>Змішування</label>
+          <select id="blendMode">
+            <option value="70_30" selected>70% факт + 30% база</option>
+            <option value="50_50">50% факт + 50% база</option>
+            <option value="90_10">90% факт + 10% база</option>
+            <option value="base_only">0% факт + 100% база</option>
+            <option value="fact_only">100% факт + 0% база</option>
+          </select>
+        </div>
+        <button class="btn primary" id="btnNewPreview">Порахувати</button>
+        <button class="btn small" id="btnNewApply">Застосувати в план</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="noteBox" id="newBox">Натисни <b>Порахувати</b> — отримаєш план по каналах на основі минулого місяця.</div>
+      <div class="hr"></div>
+      <canvas id="chartNew" width="1100" height="360"></canvas>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="card" id="tab-settings" style="display:none">
+    <div class="hd">
+      <div>
+        <div class="h">Налаштування моделі</div>
+        <div class="hint">Тут “двигун”: базові CPL/Q/CR і ліміти по каналах. Міняй лише коли реальність змінилась.</div>
+      </div>
+      <div class="row">
+        <button class="btn small" id="btnAutoCalibrate">Автокалібрувати з факту (обережно)</button>
+      </div>
+    </div>
+    <div class="bd" id="settingsBox"></div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="fileImport" accept="application/json" style="display:none" />
+
+<!-- Password modal -->
+<div class="modal" id="pwModal">
+  <div class="box">
+    <h3>Пароль для редагування</h3>
+    <p>Без пароля — тільки перегляд. З паролем — редагування, планування, збереження.</p>
+    <input id="pwInput" type="password" placeholder="Введи пароль" autocomplete="current-password" />
+    <div class="actions">
+      <button class="btn" id="pwCancel">Скасувати</button>
+      <button class="btn primary" id="pwOk">Увімкнути редагування</button>
     </div>
   </div>
 </div>
 
-<header>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Маркетинг-кокпіт: план → оптимізація → прогноз</h1>
-          <div class="sub">
-            Фокус: <b>алгоритм</b> бере минулий місяць (бюджети/ліди/якість/конверсії) + план (продажі/бюджет/макс. ліди)
-            і пропонує <b>найдешевший</b> та <b>найнадійніший</b> розподіл лідогенерації по каналах.
-          </div>
-        </div>
-      </div>
-
-      <div class="tabs" id="tabs">
-        <div class="tab active" data-tab="opt">Оптимізатор</div>
-        <div class="tab" data-tab="pf">План / Факт</div>
-        <div class="tab" data-tab="funnels">Воронки</div>
-        <div class="tab" data-tab="data">Дані</div>
-        <div class="tab" data-tab="glossary">Словник</div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<main>
-  <div class="wrap">
-
-    <section class="section active" id="sec-opt">
-      <div class="grid">
-
-        <div class="card">
-          <div class="hd">
-            <div class="title">Оптимізатор виконання плану</div>
-            <div class="hint">
-              Ввід: план продажів + бюджет + max лідів по каналах. Алгоритм розподіляє ліди так, щоб мінімізувати <span class="pill">CPS</span>
-              з “штрафом ризику” (менше довіряємо каналам з малим обсягом минулого місяця).
-            </div>
-          </div>
-          <div class="bd">
-
-            <div class="controls">
-              <div class="ctl">
-                <span>План продажів (шт.)</span>
-                <input type="number" id="planSales" value="40" min="0"/>
-              </div>
-              <div class="ctl">
-                <span>Місячний бюджет (грн)</span>
-                <input type="number" id="planBudget" value="200000" min="0"/>
-              </div>
-              <div class="ctl">
-                <span>Ризик-штраф</span>
-                <select id="riskMode">
-                  <option value="0">0 — ігнорувати ризик</option>
-                  <option value="1" selected>1 — помірний</option>
-                  <option value="2">2 — жорсткий</option>
-                </select>
-              </div>
-              <div class="ctl">
-                <span>Крок алокації</span>
-                <select id="stepMode">
-                  <option value="continuous" selected>Безперервний (швидко)</option>
-                  <option value="discrete">Дискретний (1 лід крок)</option>
-                </select>
-              </div>
-
-              <button class="btn" id="runOpt">Запустити оптимізацію</button>
-              <button class="btn secondary" id="applyToPlan">Застосувати як План</button>
-            </div>
-
-            <div style="height:12px"></div>
-
-            <div class="kpis" id="optKpis"></div>
-
-            <div style="height:12px"></div>
-
-            <div class="card" style="box-shadow:none">
-              <div class="hd" style="border-bottom:none">
-                <div class="title">Рекомендований розподіл по каналах</div>
-                <div class="hint">Показує бюджет, ліди, очікувані кваліфіковані та продажі. Під капотом: мінімізація ефективного CPS.</div>
-              </div>
-              <div class="bd" style="padding-top:0">
-                <div class="alloc" id="allocRows"></div>
-              </div>
-            </div>
-
-            <div style="height:10px"></div>
-            <div class="miniNote" id="optNotes"></div>
-
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="hd">
-            <div class="title">Контрольні прапорці (анти-самообман)</div>
-            <div class="hint">Щоб план не був красивою казкою.</div>
-          </div>
-          <div class="bd">
-            <div class="miniNote">
-              <b>1) Якщо план продажів не виконується навіть теоретично</b> (через max лідів або бюджет) — інструмент скаже прямо.
-              <br/><br/>
-              <b>2) Якщо найкращий канал “тягне ковдру”</b> — це нормально. Погано, якщо канал маленький (мало даних) → ризик-штраф зменшить його частку.
-              <br/><br/>
-              <b>3) Перевірка реальності:</b> якщо в минулому місяці канал дав 20 лідів, а ти ставиш йому max 500 — це фантазія. У вкладці “Дані” є швидка перевірка.
-              <br/><br/>
-              <b>4) Універсальна формула:</b>
-              <span class="pill">CPS ≈ CPL / (Якість × Конверсія в продаж)</span>.
-              Якщо quality або CR падає — CPS летить в космос.
-            </div>
-
-            <div style="height:14px"></div>
-
-            <div class="miniNote">
-              <span class="pill">Порада</span>
-              Зроби один раз правильні дані минулого місяця. Потім цей інструмент реально економить гроші.
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <section class="section" id="sec-pf">
-      <div class="card">
-        <div class="hd">
-          <div class="title">План / Факт (канали)</div>
-          <div class="hint">Мінімум ручного вводу: у “Факт” можна вносити раз на тиждень (4 тижні). Прогноз рахується автоматично.</div>
-        </div>
-        <div class="bd">
-          <div class="controls">
-            <div class="ctl">
-              <span>Режим прогнозу</span>
-              <select id="forecastMode">
-                <option value="runrate" selected>Run-rate (простий)</option>
-                <option value="trend">Trend (вага останнім тижням)</option>
-              </select>
-            </div>
-            <div class="ctl">
-              <span>Тижнів пройшло</span>
-              <select id="weeksDone">
-                <option value="1">1 / 4</option>
-                <option value="2">2 / 4</option>
-                <option value="3">3 / 4</option>
-                <option value="4" selected>4 / 4</option>
-              </select>
-            </div>
-            <div class="ctl">
-              <span>Тижнів у місяці</span>
-              <select id="weeksTotal">
-                <option value="4" selected>4</option>
-                <option value="5">5</option>
-              </select>
-            </div>
-            <button class="btn secondary" id="saveLocal">Зберегти (Local)</button>
-            <button class="btn secondary" id="loadLocal">Завантажити (Local)</button>
-            <button class="btn secondary" id="loadGS">Підвантажити (Sheets)</button>
-            <button class="btn secondary" id="saveGS">Зберегти (Sheets)</button>
-            <button class="btn" id="resetAll">Скинути</button>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="kpis" id="pfKpis"></div>
-
-          <div style="height:12px"></div>
-
-          <div class="tableWrap">
-            <table id="tblPF"></table>
-          </div>
-
-          <div style="height:12px"></div>
-          <div class="twoCol">
-            <div>
-              <div class="title" style="font-size:12px;margin-bottom:8px">Експорт / імпорт JSON (для передачі/резерву)</div>
-              <textarea id="jsonBox"></textarea>
-              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-                <button class="btn secondary" id="exportJSON">Експорт</button>
-                <button class="btn secondary" id="importJSON">Імпорт</button>
-                <button class="btn secondary" id="copyJSON">Копіювати</button>
-              </div>
-            </div>
-            <div>
-              <div class="title" style="font-size:12px;margin-bottom:8px">Пояснення логіки</div>
-              <div class="miniNote">
-                <b>Факт кваліфікованих</b> = Σ(Ліди_тижня × Якість%_тижня).<br/>
-                <b>Факт CR</b> = Продажі / Кваліфіковані.<br/>
-                <b>Forecast</b> — два режими:
-                Run-rate (середнє × тижні) або Trend (вага останнім тижням).<br/><br/>
-                Якщо ти вводиш продажі “на око” — CPS стає фейковим. Інструмент не магія.
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="sec-funnels">
-      <div class="card">
-        <div class="hd">
-          <div class="title">Воронки (ступінчасті, як у твоєму прикладі)</div>
-          <div class="hint">Канал → Ліди → Угоди (кваліф.) → Продажі. Окремо: Прогноз (TOTAL) і Ціль.</div>
-        </div>
-        <div class="bd">
-
-          <div class="funnelsRow" id="funnelsTop"></div>
-
-          <div style="height:12px"></div>
-
-          <div class="card" style="box-shadow:none">
-            <div class="hd">
-              <div class="title">Ціль (TOTAL)</div>
-              <div class="hint">Велика “цільова” воронка по плану місяця.</div>
-            </div>
-            <div class="bd">
-              <div class="fCard" id="targetFunnel"></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="sec-data">
-      <div class="card">
-        <div class="hd">
-          <div class="title">Дані (мин. місяць + обмеження поточного плану)</div>
-          <div class="hint">Тут ти вводиш базу для алгоритму. Якщо дані криві — оптимізація буде красиво-кривою.</div>
-        </div>
-        <div class="bd">
-
-          <div class="controls">
-            <div class="ctl">
-              <span>Швидкий пресет</span>
-              <select id="preset">
-                <option value="empty" selected>Порожньо</option>
-                <option value="demo">Демо (приклад)</option>
-              </select>
-            </div>
-            <button class="btn secondary" id="applyPreset">Застосувати</button>
-          </div>
-
-          <div style="height:12px"></div>
-
-          <div class="tableWrap">
-            <table id="tblData"></table>
-          </div>
-
-          <div style="height:12px"></div>
-          <div class="miniNote" id="dataChecks"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="sec-glossary">
-      <div class="card">
-        <div class="hd">
-          <div class="title">Словник маркетингових термінів (щоб команда не “вчилася гадати”)</div>
-          <div class="hint">Коротко й людською мовою.</div>
-        </div>
-        <div class="bd">
-          <div class="glossary">
-            <div class="term"><b>Лід</b> — контакт/заявка з потенціалом покупки. Не “клік”.</div>
-            <div class="term"><b>Якість лідів (%)</b> — частка лідів, що реально підходять/кваліфікуються (MQL/SQL).</div>
-            <div class="term"><b>Кваліфікований лід (QL)</b> = Ліди × Якість%.</div>
-            <div class="term"><b>CPL</b> (Cost per Lead) = Бюджет / Ліди.</div>
-            <div class="term"><b>CPQL</b> = Бюджет / Кваліфіковані ліди.</div>
-            <div class="term"><b>CR (конверсія в продаж)</b> — частка кваліфікованих, що стали продажами (або угодами → продаж).</div>
-            <div class="term"><b>Продажі</b> = Кваліфіковані × CR.</div>
-            <div class="term"><b>CPS</b> (Cost per Sale) = Бюджет / Продажі.</div>
-            <div class="term"><b>Max лідів</b> — стеля каналу по лідах на місяць (потужність/інвентар/операційка).</div>
-            <div class="term"><b>Risk-штраф</b> — зменшує долю каналу, якщо минулого місяця було мало даних (вища невизначеність).</div>
-            <div class="term"><b>Run-rate</b> — простий прогноз: “як зараз, так і далі”.</div>
-            <div class="term"><b>Trend</b> — прогноз з більшою вагою останнім тижням.</div>
-          </div>
-
-          <div style="height:12px"></div>
-          <div class="miniNote">
-            <span class="pill">Правило для власника</span>
-            Якщо хтось не може пояснити різницю між CPL і CPS — він не керує маркетингом, він “крутить рекламу”.
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-</main>
-
 <script>
-/* =========================
-   PASSWORD GATE (functional)
-========================= */
-const PASS_HASH = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae"; // sha256("Misterbin")
-const AUTH_KEY = "marketing_hard_auth_v1";
+/* =========================================================
+   0) CLOUD + PASSWORD
+========================================================= */
+const CLOUD_URL = "https://script.google.com/macros/s/AKfycbyNvynuk_huHSh5w49PNSKculxo04meRVCi3rAhACok7H3z25wsnqWtYmb1Pz95VsSEEw/exec";
+const CLOUD_KEY = "BINOKL_SUPER_SECRET_KEY_2026";
+const ADMIN_PASSWORD_SHA256_HEX = "db6ec3fde0265a91ea1e541baa84823a1c836c24e9c0d066e14c4a8978b9f2ae";
 
-/* =========================
-   Google Sheets WebApp (your URL)
-========================= */
-const GS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxoDYDHZayqYfLC3bR_uKF0i1BhfdrxVHu8x43Id9YRVuoE8vW-hdmcHxRR1bJYI9gR4A/exec";
-const GS_AUTOSAVE_MS = 1500;
-const GS_PREFER_REMOTE_ON_BOOT = true;
-
-function $(id){ return document.getElementById(id); }
+const STORAGE_KEY="binokl_marketing_os_v3_local";
+const SESSION_EDIT_KEY="binokl_marketing_os_v3_edit_unlocked";
 
 async function sha256Hex(str){
-  const enc = new TextEncoder().encode(str);
-  const buf = await crypto.subtle.digest("SHA-256", enc);
+  const enc=new TextEncoder().encode(str);
+  const buf=await crypto.subtle.digest("SHA-256", enc);
   return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
-function showAuthError(msg){
-  const e = $("authErr");
-  e.textContent = msg || "Невірний пароль.";
-  e.style.display = "block";
-  $("authOk").style.display = "none";
-}
-function showAuthOk(msg){
-  const o = $("authOk");
-  o.textContent = msg || "Ок. Вхід виконано.";
-  o.style.display = "block";
-  $("authErr").style.display = "none";
-}
-function setSheetStatus(msg){
-  const el = $("sheetStatus");
-  if (!el) return;
-  el.textContent = msg || "";
+function toast(html, ms=2600){
+  const t=document.getElementById("toast");
+  t.innerHTML=html; t.style.display="block";
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.style.display="none", ms);
 }
 
-function isAuthed(){
-  return sessionStorage.getItem(AUTH_KEY) === "1";
-}
-function setAuthed(v){
-  if (v) sessionStorage.setItem(AUTH_KEY, "1");
-  else sessionStorage.removeItem(AUTH_KEY);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const n=(x)=> (isFinite(+x)? +x : 0);
+const fmt = {
+  int:(x)=> (isFinite(x)? Math.round(x).toLocaleString("uk-UA") : "—"),
+  num:(x,d=2)=> (isFinite(x)? (+x).toLocaleString("uk-UA",{maximumFractionDigits:d, minimumFractionDigits:d}) : "—"),
+  uah:(x)=> (isFinite(x)? Math.round(x).toLocaleString("uk-UA")+" грн" : "—"),
+  pct01:(x)=> (isFinite(x)? Math.round(x*100)+"%" : "—"),
+};
+
+function debounce(fn, ms){
+  let t=null;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), ms); };
 }
 
-/* =========================
-   Google Sheets: JSONP load + no-cors save
-========================= */
-function gsLoadStateViaJSONP(){
-  return new Promise((resolve, reject) => {
-    if (!GS_WEBAPP_URL) { resolve(null); return; }
-    const cbName = "__gs_cb_" + Math.random().toString(16).slice(2);
-    const url = GS_WEBAPP_URL + "?action=get&callback=" + cbName + "&t=" + Date.now();
+/* =========================================================
+   1) МОДЕЛЬ КАНАЛІВ
+========================================================= */
+const GROUPS = [
+  { key:"google",  name:"Google (Search/PMax/YT)" },
+  { key:"meta",    name:"Meta" },
+  { key:"tiktok",  name:"TikTok" },
+  { key:"organic", name:"Organic / Direct / Ref" },
+  { key:"other",   name:"Інше" },
+];
 
-    window[cbName] = (payload) => {
-      try {
-        delete window[cbName];
-        script.remove();
-        if (payload && payload.ok) resolve(payload.state || null);
-        else reject(new Error(payload?.error || "GS load failed"));
-      } catch (e) { reject(e); }
+const BASE_MODEL = {
+  google:  { maxLeads:260, cpl:850,  q:0.33, cr:0.07 },
+  meta:    { maxLeads:380, cpl:740,  q:0.40, cr:0.10 },
+  tiktok:  { maxLeads:140, cpl:950,  q:0.30, cr:0.08 },
+  organic: { maxLeads:120, cpl:0,    q:0.60, cr:0.14 },
+  other:   { maxLeads:120, cpl:1200, q:0.25, cr:0.06 },
+};
+
+const SEASON = {
+  "2026-01": {label:"Січень 2026", cpl:1.10, q:0.95, cr:0.90},
+  "2026-02": {label:"Лютий 2026",  cpl:0.95, q:1.05, cr:1.10},
+  "2026-03": {label:"Березень 2026",cpl:0.98, q:1.02, cr:1.03},
+  "2026-04": {label:"Квітень 2026", cpl:1.00, q:1.00, cr:1.00},
+  "2026-05": {label:"Травень 2026", cpl:1.00, q:1.00, cr:1.00},
+  "2026-06": {label:"Червень 2026", cpl:1.00, q:1.00, cr:1.00},
+};
+function monthLabel(k){ return (SEASON[k]?.label) || k; }
+
+function applySeason(model, monthKey){
+  const s = SEASON[monthKey] || {cpl:1,q:1,cr:1};
+  return {
+    cpl: Math.max(0, n(model.cpl) * s.cpl),
+    q: clamp(n(model.q) * s.q, 0, 1),
+    cr: clamp(n(model.cr) * s.cr, 0, 1),
+    maxLeads: Math.max(0, n(model.maxLeads))
+  };
+}
+
+/* =========================================================
+   2) STATE
+========================================================= */
+function emptyMonth(monthKey){
+  const groups = GROUPS.map(g=>{
+    const m = BASE_MODEL[g.key];
+    return {
+      key:g.key,
+      planBudget:0,
+      planLeads:0,
+      planCPL:m.cpl,
+      planQ:m.q,
+      planCR:m.cr,
+      maxLeads:m.maxLeads,
+      weeks: Array.from({length:5}, ()=>({budget:0, leads:0, q:m.q, sales:0})),
     };
-
-    const script = document.createElement("script");
-    script.src = url;
-    script.onerror = () => {
-      delete window[cbName];
-      script.remove();
-      reject(new Error("GS JSONP load error"));
-    };
-    document.head.appendChild(script);
   });
+  return {
+    monthKey,
+    weeksInMonth:4,
+    kpiMode:"sales",
+    planSales:10,
+    planTLeads:120,
+    planBudget:0,
+    groups,
+    closed:false,
+    closedAt:null,
+  };
 }
 
-function gsSaveStateNoCors(stateObj){
-  if (!GS_WEBAPP_URL) return Promise.resolve(false);
-
-  const form = new URLSearchParams();
-  form.set("state", JSON.stringify(stateObj));
-
-  return fetch(GS_WEBAPP_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body: form.toString()
-  }).then(()=>true).catch(()=>false);
+function freshState(){
+  const months = ["2026-01","2026-02","2026-03","2026-04"];
+  const byKey = {};
+  months.forEach(k=>byKey[k]=emptyMonth(k));
+  return {
+    version:"3.0.0",
+    cloudKey:CLOUD_KEY,
+    activeMonth:"2026-01",
+    historyOrder: months,
+    months: byKey,
+    pasteHot:true,
+    lastWeeklyFix:null,
+    cloudMeta:{ lastPullAt:0, lastPushAt:0, lastServerAt:0, status:"idle", msg:"" },
+  };
 }
 
-/* =========================
-   Auth
-========================= */
-async function tryLogin(){
-  const pwd = $("authPwd").value || "";
-  if (!pwd.trim()){
-    showAuthError("Введи пароль.");
-    return;
+function loadLocalState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return freshState();
+    const s=JSON.parse(raw);
+    if(!s || !s.months || !s.activeMonth) return freshState();
+    return normalizeState(s);
+  }catch(e){
+    return freshState();
   }
-  if (!PASS_HASH){
-    showAuthError("Не задано PASS_HASH у коді.");
-    return;
-  }
-  const h = await sha256Hex(pwd);
-  if (h === PASS_HASH){
-    setAuthed(true);
-    showAuthOk("Ок. Вхід виконано.");
-    $("authGate").style.display = "none";
-    await initApp();
-  } else {
-    showAuthError("Невірний пароль.");
-  }
 }
 
-function logout(){
-  setAuthed(false);
-  $("authGate").style.display = "flex";
-  $("authPwd").value = "";
-  $("authOk").style.display = "none";
-  $("authErr").style.display = "none";
-}
-
-$("authBtn").addEventListener("click", ()=>{ tryLogin(); });
-$("authLogout").addEventListener("click", ()=>{ logout(); });
-$("authPwd").addEventListener("keydown", (e)=>{
-  if (e.key === "Enter") tryLogin();
-});
-
-/* =========================
-   APP
-========================= */
-let state = null;
-
-async function initApp(){
-
-const CHANNELS = ["Google","Meta","TikTok","ВЛ","KM","Повторні","Інше"];
-const WEEKS = [1,2,3,4];
-
-function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
-function toNum(x){
-  const v = Number(String(x ?? "").replace(",", "."));
-  return isFinite(v) ? v : 0;
-}
-function safeDiv(a,b){ return (b && isFinite(a) && isFinite(b)) ? (a/b) : null; }
-function fmtInt(v){ return v==null ? "—" : Math.round(v).toLocaleString("uk-UA"); }
-function fmtMoney(v){ return v==null ? "—" : Math.round(v).toLocaleString("uk-UA"); }
-function fmt2(v){ return v==null ? "—" : (v).toFixed(2); }
-function fmtPctRatio(v){ return v==null ? "—" : (v*100).toFixed(1)+"%"; }
-
-function defaultState(){
-  const channels = {};
-  for (const name of CHANNELS){
-    channels[name] = {
-      last: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
-      cap: { maxLeads: 0 },
-      plan: { budget: 0, leads: 0, qualityPct: 0, convPct: 0 },
-      weeks: {
-        1:{ budget:0, leads:0, qualityPct:0, sales:0 },
-        2:{ budget:0, leads:0, qualityPct:0, sales:0 },
-        3:{ budget:0, leads:0, qualityPct:0, sales:0 },
-        4:{ budget:0, leads:0, qualityPct:0, sales:0 }
-      }
-    };
-  }
-  return { channels };
-}
-if (!state) state = defaultState();
-
-/* Tabs */
-function activateTab(key){
-  document.querySelectorAll(".tab").forEach(t=>{
-    t.classList.toggle("active", t.dataset.tab===key);
+function normalizeState(s){
+  if(!Array.isArray(s.historyOrder) || !s.historyOrder.length) s.historyOrder=Object.keys(s.months||{}).sort();
+  if(!s.months) s.months={};
+  s.historyOrder.forEach(k=>{ if(!s.months[k]) s.months[k]=emptyMonth(k); });
+  Object.keys(s.months).forEach(k=>{
+    const m=s.months[k];
+    if(!m.groups || !Array.isArray(m.groups)) m.groups=emptyMonth(k).groups;
+    const by=new Map(m.groups.map(x=>[x.key,x]));
+    m.groups=GROUPS.map(g=>{
+      const old=by.get(g.key);
+      const base=BASE_MODEL[g.key];
+      const weeks=(old?.weeks && Array.isArray(old.weeks))? old.weeks.slice(0,5):[];
+      while(weeks.length<5) weeks.push({budget:0,leads:0,q:base.q,sales:0});
+      return {
+        key:g.key,
+        planBudget:Math.max(0,n(old?.planBudget)),
+        planLeads:Math.max(0,n(old?.planLeads)),
+        planCPL:Math.max(0,n(old?.planCPL || base.cpl)),
+        planQ:clamp(n(old?.planQ ?? base.q),0,1),
+        planCR:clamp(n(old?.planCR ?? base.cr),0,1),
+        maxLeads:Math.max(0,n(old?.maxLeads ?? base.maxLeads)),
+        weeks:weeks.map(w=>({budget:Math.max(0,n(w.budget)), leads:Math.max(0,n(w.leads)), q:clamp(n(w.q),0,1), sales:Math.max(0,n(w.sales))})),
+      };
+    });
+    if(!m.weeksInMonth) m.weeksInMonth=4;
+    if(!m.kpiMode) m.kpiMode="sales";
+    if(!("planSales" in m)) m.planSales=10;
+    if(!("planTLeads" in m)) m.planTLeads=120;
+    if(!("planBudget" in m)) m.planBudget=0;
+    if(!("closed" in m)) m.closed=false;
   });
-  const map = { opt:"sec-opt", pf:"sec-pf", funnels:"sec-funnels", data:"sec-data", glossary:"sec-glossary" };
-  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-  document.getElementById(map[key]).classList.add("active");
-}
-document.getElementById("tabs").addEventListener("click", (e)=>{
-  const t = e.target.closest(".tab");
-  if (!t) return;
-  activateTab(t.dataset.tab);
-});
-
-/* PF calc */
-function sumWeeks(channel, key){
-  let s=0;
-  for (const w of WEEKS) s += toNum(channel.weeks[w][key]);
+  if(!s.cloudMeta) s.cloudMeta={ lastPullAt:0, lastPushAt:0, lastServerAt:0, status:"idle", msg:"" };
+  if(!("pasteHot" in s)) s.pasteHot=true;
   return s;
 }
-function weightedAvg(values){
-  let num=0, den=0;
-  for (let i=0;i<values.length;i++){
-    const w=i+1; num += w*values[i]; den += w;
-  }
-  return den ? num/den : 0;
+
+let state = loadLocalState();
+function saveLocalState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+function isEditUnlocked(){
+  return sessionStorage.getItem(SESSION_EDIT_KEY)==="1";
 }
-function forecastFromWeeks(channel, key, mode, weeksDone, weeksTotal){
-  const series = WEEKS.map(w=>{
-    if (key==="qualified"){
-      const L = toNum(channel.weeks[w].leads);
-      const Qp = toNum(channel.weeks[w].qualityPct)/100;
-      return L*Qp;
+function setEditUnlocked(on){
+  if(on) sessionStorage.setItem(SESSION_EDIT_KEY,"1");
+  else sessionStorage.removeItem(SESSION_EDIT_KEY);
+  updateEditUI();
+  lockInputs();
+}
+
+function updateEditUI(){
+  const on=isEditUnlocked();
+  document.getElementById("editPill").textContent = "Edit: " + (on ? "ON" : "OFF");
+  document.getElementById("lockNote").style.display = on ? "none" : "inline-flex";
+}
+
+function lockInputs(){
+  const locked = !isEditUnlocked();
+  const allowIds = new Set([
+    "btnHelp","btnUnlock","btnLock","btnCloudPull","btnExport","btnImport","fileImport",
+    "monthKey","weekSel",
+  ]);
+  document.querySelectorAll("input, select, button").forEach(el=>{
+    const id=el.id||"";
+    if(allowIds.has(id)) return;
+
+    // Preview/перерахунок дозволяємо, навіть якщо locked (але без зміни state)
+    const previewIds = new Set(["btnFixCalc","btnOldPreview","btnNewPreview","btnRecalc"]);
+    if(previewIds.has(id)){
+      el.disabled=false;
+      return;
     }
-    return toNum(channel.weeks[w][key]);
+
+    // Критичні write-дії
+    const writeIds = new Set([
+      "btnCloudPush","btnReset","btnFixApply","btnOldApply","btnNewApply",
+      "btnPlanOld","btnPlanNew","btnClearWeek","btnAutoCalibrate"
+    ]);
+
+    if(writeIds.has(id)){
+      el.disabled = locked;
+      return;
+    }
+
+    // Поля редагування
+    if(el.classList.contains("cell") || id==="planSales" || id==="planTLeads" || id==="planBudget" || id==="weeksInMonth" || id==="kpiMode" || id==="btnPasteMode"){
+      el.disabled = locked;
+      return;
+    }
+
+    // Інші кнопки/селекти — залишаємо як є
   });
-
-  const done = clamp(toNum(weeksDone),1,4);
-  const total = clamp(toNum(weeksTotal),4,5);
-  const doneSeries = series.slice(0,done);
-  const fact = doneSeries.reduce((a,b)=>a+b,0);
-
-  if (mode==="trend"){
-    const rate = weightedAvg(doneSeries);
-    return rate * total;
-  } else {
-    const perWeek = fact / done;
-    return perWeek * total;
-  }
-}
-function computeChannelPF(ch, forecastMode, weeksDone, weeksTotal){
-  const planB = toNum(ch.plan.budget);
-  const planL = toNum(ch.plan.leads);
-  const planQp = toNum(ch.plan.qualityPct)/100;
-  const planCR = toNum(ch.plan.convPct)/100;
-  const planQL = planL*planQp;
-  const planS  = planQL*planCR;
-
-  const planCPL  = safeDiv(planB, planL);
-  const planCPQL = safeDiv(planB, planQL);
-  const planCPS  = safeDiv(planB, planS);
-
-  const factB = sumWeeks(ch, "budget");
-  const factL = sumWeeks(ch, "leads");
-  let factQL=0;
-  for (const w of WEEKS){
-    const L=toNum(ch.weeks[w].leads);
-    const Qp=toNum(ch.weeks[w].qualityPct)/100;
-    factQL += L*Qp;
-  }
-  const factS = sumWeeks(ch, "sales");
-
-  const factCPL = safeDiv(factB, factL);
-  const factCPQL= safeDiv(factB, factQL);
-  const factCPS = safeDiv(factB, factS);
-
-  const factQp = safeDiv(factQL, factL);
-  const factCR = safeDiv(factS, factQL);
-
-  const foreB  = forecastFromWeeks(ch, "budget", forecastMode, weeksDone, weeksTotal);
-  const foreL  = forecastFromWeeks(ch, "leads", forecastMode, weeksDone, weeksTotal);
-  const foreQL = forecastFromWeeks(ch, "qualified", forecastMode, weeksDone, weeksTotal);
-  const foreS  = forecastFromWeeks(ch, "sales", forecastMode, weeksDone, weeksTotal);
-
-  const foreCPL = safeDiv(foreB, foreL);
-  const foreCPQL= safeDiv(foreB, foreQL);
-  const foreCPS = safeDiv(foreB, foreS);
-
-  const foreQp = safeDiv(foreQL, foreL);
-  const foreCR = safeDiv(foreS, foreQL);
-
-  return {
-    plan:{B:planB,L:planL,Qp:planQp,QL:planQL,CR:planCR,S:planS,CPL:planCPL,CPQL:planCPQL,CPS:planCPS},
-    fact:{B:factB,L:factL,Qp:factQp,QL:factQL,CR:factCR,S:factS,CPL:factCPL,CPQL:factCPQL,CPS:factCPS},
-    fore:{B:foreB,L:foreL,Qp:foreQp,QL:foreQL,CR:foreCR,S:foreS,CPL:foreCPL,CPQL:foreCPQL,CPS:foreCPS},
-  };
-}
-function computeTotalsPF(perCh, CHANNELS){
-  const tot = { plan:{B:0,L:0,QL:0,S:0}, fact:{B:0,L:0,QL:0,S:0}, fore:{B:0,L:0,QL:0,S:0} };
-  for (const name of CHANNELS){
-    const r = perCh[name];
-    tot.plan.B += r.plan.B; tot.plan.L += r.plan.L; tot.plan.QL += r.plan.QL; tot.plan.S += r.plan.S;
-    tot.fact.B += r.fact.B; tot.fact.L += r.fact.L; tot.fact.QL += r.fact.QL; tot.fact.S += r.fact.S;
-    tot.fore.B += r.fore.B; tot.fore.L += r.fore.L; tot.fore.QL += r.fore.QL; tot.fore.S += r.fore.S;
-  }
-  const add = (o)=>{
-    o.CPL = safeDiv(o.B,o.L);
-    o.Qp  = safeDiv(o.QL,o.L);
-    o.CPQL= safeDiv(o.B,o.QL);
-    o.CR  = safeDiv(o.S,o.QL);
-    o.CPS = safeDiv(o.B,o.S);
-  };
-  add(tot.plan); add(tot.fact); add(tot.fore);
-  return tot;
 }
 
-/* Optimizer */
-function channelEfficiency(name){
-  const ch = state.channels[name];
-  const lastB = toNum(ch.last.budget);
-  const lastL = toNum(ch.last.leads);
-  const q = clamp(toNum(ch.last.qualityPct)/100, 0, 1);
-  const cr = clamp(toNum(ch.last.convPct)/100, 0, 1);
-  const cpl = safeDiv(lastB, lastL);
-  const salePerLead = q * cr;
-  const cps = (cpl!=null && salePerLead>0) ? (cpl / salePerLead) : null;
-  return { cpl, q, cr, salePerLead, cps, lastL };
-}
-function riskWeightFromMode(mode){
-  const m = String(mode);
-  if (m==="2") return 1.2;
-  if (m==="1") return 0.6;
-  return 0.0;
-}
-function optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode, CHANNELS}){
-  const riskW = riskWeightFromMode(riskMode);
-  const items = [];
-
-  for (const name of CHANNELS){
-    const eff = channelEfficiency(name);
-    const maxLeads = toNum(state.channels[name].cap.maxLeads);
-    if (!maxLeads || maxLeads<=0) continue;
-    if (eff.cpl==null || eff.cps==null || eff.salePerLead<=0) continue;
-
-    const penalty = 1 + (riskW / Math.sqrt((eff.lastL||0) + 1));
-    const effCps = eff.cps * penalty;
-
-    items.push({
-      name,
-      maxLeads,
-      cpl: eff.cpl,
-      salePerLead: eff.salePerLead,
-      cps: eff.cps,
-      effCps,
-      penalty
-    });
-  }
-
-  if (!items.length){
-    return { ok:false, reason:"Нема валідних каналів для оптимізації. Заповни дані минулого місяця + max лідів." };
-  }
-
-  items.sort((a,b)=>a.effCps - b.effCps);
-
-  const alloc = {};
-  for (const it of items){
-    alloc[it.name] = { leads:0, budget:0, sales:0, qualified:0, eff:it };
-  }
-
-  let budgetLeft = budgetTotal;
-  let salesNeed = salesTarget;
-
-  const allocateLeads = (name, leads)=>{
-    const a = alloc[name];
-    const it = a.eff;
-    const addLeads = Math.max(0, leads);
-    const addBudget = addLeads * it.cpl;
-    const addSales = addLeads * it.salePerLead;
-
-    let qApprox = 0;
-    const chEff = channelEfficiency(name);
-    if (chEff.cr>0) qApprox = chEff.salePerLead / chEff.cr;
-    const addQualified = addLeads * qApprox;
-
-    a.leads += addLeads;
-    a.budget += addBudget;
-    a.sales += addSales;
-    a.qualified += addQualified;
-
-    budgetLeft -= addBudget;
-    salesNeed -= addSales;
-  };
-
-  if (stepMode==="continuous"){
-    for (const it of items){
-      if (budgetLeft<=0 || salesNeed<=0) break;
-      const a = alloc[it.name];
-      const capRemain = it.maxLeads - a.leads;
-      if (capRemain<=0) continue;
-
-      const leadsToHitSales = it.salePerLead>0 ? (salesNeed / it.salePerLead) : Infinity;
-      const leadsToFitBudget = it.cpl>0 ? (budgetLeft / it.cpl) : 0;
-
-      const take = Math.max(0, Math.min(capRemain, leadsToHitSales, leadsToFitBudget));
-      allocateLeads(it.name, take);
+/* =========================================================
+   3) CLOUD API
+========================================================= */
+async function cloudFetchJson(url, opts){
+  const r = await fetch(url, opts);
+  const text = await r.text();
+  try{
+    return JSON.parse(text);
+  }catch(e){
+    const m = text.match(/\{[\s\S]*\}/);
+    if(m){
+      try{ return JSON.parse(m[0]); }catch(_){}
     }
-  } else {
-    while (budgetLeft>0 && salesNeed>0){
-      let chosen = null;
-      for (const it of items){
-        const a = alloc[it.name];
-        if (a.leads >= it.maxLeads) continue;
-        if (budgetLeft < it.cpl) continue;
-        chosen = it; break;
-      }
-      if (!chosen) break;
-      allocateLeads(chosen.name, 1);
-    }
+    return { ok:false, raw:text, status:r.status };
   }
-
-  let budgetUsed=0, leadsTotal=0, salesTotal=0, qualifiedTotal=0;
-  for (const name in alloc){
-    budgetUsed += alloc[name].budget;
-    leadsTotal += alloc[name].leads;
-    salesTotal += alloc[name].sales;
-    qualifiedTotal += alloc[name].qualified;
-  }
-
-  const cpsTotal = safeDiv(budgetUsed, salesTotal);
-  const shortfall = Math.max(0, salesTarget - salesTotal);
-
-  let maxSalesPossible=0;
-  for (const it of items){
-    maxSalesPossible += it.maxLeads * it.salePerLead;
-  }
-
-  const ok = shortfall<=1e-6;
-  return {
-    ok,
-    items,
-    alloc,
-    summary:{
-      budgetTotal,
-      budgetUsed,
-      budgetLeft,
-      leadsTotal,
-      qualifiedTotal,
-      salesTarget,
-      salesTotal,
-      shortfall,
-      cpsTotal,
-      maxSalesPossible
-    }
-  };
 }
 
-/* Tables builders */
-function buildDataTable(){
-  const tbl = document.getElementById("tblData");
-  tbl.innerHTML = "";
-
-  const thead = document.createElement("thead");
-  const trh = document.createElement("tr");
-  [
-    "Канал",
-    "Мин. місяць: Бюджет",
-    "Мин. місяць: Ліди",
-    "Мин. місяць: Якість (%)",
-    "Мин. місяць: Конверсія в продаж (%)",
-    "Розрах.: CPL",
-    "Розрах.: CPS",
-    "Поточний план: Max лідів"
-  ].forEach(t=>{
-    const th=document.createElement("th");
-    th.textContent=t;
-    trh.appendChild(th);
-  });
-  thead.appendChild(trh);
-  tbl.appendChild(thead);
-
-  const tbody = document.createElement("tbody");
-  tbl.appendChild(tbody);
-}
-function buildPFTable(){
-  const tbl = document.getElementById("tblPF");
-  tbl.innerHTML = "";
-
-  const thead = document.createElement("thead");
-  const trh = document.createElement("tr");
-
-  const cols = [
-    "Канал","Статус",
-    "PLAN: Бюджет","PLAN: Ліди","PLAN: CPL","PLAN: Якість","PLAN: Квал.","PLAN: CR","PLAN: Продажі","PLAN: CPS",
-    "FACT Σ: Бюджет","FACT Σ: Ліди","FACT: CPL","FACT: Якість","FACT: Квал.","FACT: CR","FACT Σ: Продажі","FACT: CPS",
-    "Forecast: Продажі","Forecast: CPS"
+async function cloudLoad(){
+  const variants = [
+    CLOUD_URL + "?key=" + encodeURIComponent(CLOUD_KEY),
+    CLOUD_URL + "?action=load&key=" + encodeURIComponent(CLOUD_KEY),
+    CLOUD_URL + "?action=get&key=" + encodeURIComponent(CLOUD_KEY),
+    CLOUD_URL + "?k=" + encodeURIComponent(CLOUD_KEY),
   ];
-  cols.forEach(c=>{
-    const th=document.createElement("th");
-    th.textContent=c;
-    trh.appendChild(th);
+  for(const u of variants){
+    const j = await cloudFetchJson(u, {method:"GET", cache:"no-store"});
+    const s = j?.state || j?.data?.state || (j?.months ? j : null);
+    if(s && s.months && s.activeMonth){
+      return { ok:true, state: normalizeState(s), meta:j };
+    }
+  }
+  return { ok:false, state:null, meta:null };
+}
+
+async function cloudSave(s){
+  const payload = { key:CLOUD_KEY, updatedAt: Date.now(), state: s };
+  const j = await cloudFetchJson(CLOUD_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+  return { ok: !!(j?.ok ?? true), meta:j };
+}
+
+function setCloudStatus(status, msg){
+  state.cloudMeta.status=status;
+  state.cloudMeta.msg=msg||"";
+  saveLocalState();
+  renderCloudPill();
+}
+
+function renderCloudPill(){
+  const pill=document.getElementById("cloudPill");
+  const sub=document.getElementById("cloudSub");
+  const st=state.cloudMeta?.status||"idle";
+  pill.textContent = "Cloud: " + st.toUpperCase();
+  sub.textContent = state.cloudMeta?.msg || "";
+}
+
+/* =========================================================
+   4) COMPUTE
+========================================================= */
+function getMonth(){ return state.months[state.activeMonth]; }
+
+function weeksUsed(month){
+  const W=n(month.weeksInMonth);
+  let used=0;
+  for(let i=0;i<W;i++){
+    const has = month.groups.some(g=>{
+      const w=g.weeks[i]||{};
+      return n(w.budget)>0 || n(w.leads)>0 || n(w.sales)>0;
+    });
+    if(has) used=i+1;
+  }
+  return used;
+}
+
+function sumFactForGroup(gr, weeksCount){
+  const w=gr.weeks.slice(0,weeksCount);
+  const budget=w.reduce((a,x)=>a+n(x.budget),0);
+  const leads=w.reduce((a,x)=>a+n(x.leads),0);
+  const q = leads>0 ? w.reduce((a,x)=>a+n(x.leads)*n(x.q),0)/leads : n(gr.planQ);
+  const sales=w.reduce((a,x)=>a+n(x.sales),0);
+  const tLeads = leads*q;
+  const cpl = leads>0 ? budget/leads : NaN;
+  const cql = tLeads>0 ? budget/tLeads : NaN;
+  const cr = tLeads>0 ? sales/tLeads : NaN;
+  const cps = sales>0 ? budget/sales : NaN;
+  return {budget,leads,q,tLeads,sales,cpl,cql,cr,cps};
+}
+
+function computeMonth(monthKey){
+  const month = state.months[monthKey];
+  const W=n(month.weeksInMonth);
+  const used=weeksUsed(month);
+
+  const per = month.groups.map(gr=>{
+    const base = applySeason(BASE_MODEL[gr.key], monthKey);
+
+    const plan = {
+      budget:n(gr.planBudget),
+      leads:n(gr.planLeads),
+      cpl: Math.max(0,n(gr.planCPL || base.cpl)),
+      q: clamp(n(gr.planQ),0,1),
+      cr: clamp(n(gr.planCR),0,1),
+      maxLeads: Math.max(0,n(gr.maxLeads ?? base.maxLeads)),
+    };
+    if(plan.leads<=0 && plan.budget>0 && plan.cpl>0) plan.leads = plan.budget/plan.cpl;
+    plan.tLeads = plan.leads*plan.q;
+    plan.sales  = plan.tLeads*plan.cr;
+    plan.cpl_eff = plan.leads>0 ? plan.budget/plan.leads : (plan.cpl>0?plan.cpl:NaN);
+    plan.cql = plan.tLeads>0 ? plan.budget/plan.tLeads : NaN;
+    plan.cps = plan.sales>0 ? plan.budget/plan.sales : NaN;
+
+    const fact = sumFactForGroup(gr, used);
+
+    const pace = used>0 ? (W/used) : 0;
+    const fore = {};
+    fore.leads  = used>0 ? fact.leads*pace : plan.leads;
+    fore.budget = used>0 ? fact.budget*pace : plan.budget;
+
+    const effCPL = (isFinite(fact.cpl) && fact.cpl>0) ? fact.cpl : (isFinite(plan.cpl_eff)&&plan.cpl_eff>0? plan.cpl_eff : base.cpl);
+    const effQ = (isFinite(fact.q) && fact.leads>0) ? fact.q : plan.q;
+    const effCR = (isFinite(fact.cr) && fact.tLeads>0) ? fact.cr : plan.cr;
+
+    const eff = applySeason({cpl:effCPL,q:effQ,cr:effCR,maxLeads:plan.maxLeads}, monthKey);
+    fore.q  = eff.q;
+    fore.cr = eff.cr;
+
+    if(eff.cpl>0){
+      if(fore.leads>0) fore.budget = fore.leads*eff.cpl;
+      else if(fore.budget>0) fore.leads = fore.budget/eff.cpl;
+    }
+    fore.tLeads = fore.leads*fore.q;
+    fore.sales  = fore.tLeads*fore.cr;
+    fore.cpl = fore.leads>0 ? fore.budget/fore.leads : NaN;
+    fore.cql = fore.tLeads>0 ? fore.budget/fore.tLeads : NaN;
+    fore.cps = fore.sales>0 ? fore.budget/fore.sales : NaN;
+
+    const availLeads = Math.max(0, plan.maxLeads - fact.leads);
+
+    return {key:gr.key, name:GROUPS.find(x=>x.key===gr.key).name, base, plan, fact, fore, availLeads};
   });
 
-  for (const w of WEEKS){
-    ["B","L","Q%","S"].forEach(x=>{
-      const th=document.createElement("th");
-      th.textContent = `W${w}: ${x==="B"?"Бюджет":x==="L"?"Ліди":x==="Q%"?"Якість%":"Продажі"}`;
-      trh.appendChild(th);
+  const tot = ["plan","fact","fore"].reduce((acc, k)=>{
+    acc[k] = {budget:0,leads:0,tLeads:0,sales:0};
+    per.forEach(x=>{
+      acc[k].budget += n(x[k].budget);
+      acc[k].leads  += n(x[k].leads);
+      acc[k].tLeads += n(x[k].tLeads);
+      acc[k].sales  += n(x[k].sales);
     });
-  }
-
-  thead.appendChild(trh);
-  tbl.appendChild(thead);
-  tbl.appendChild(document.createElement("tbody"));
-}
-function inputCell(value, onChange, opts={}){
-  const inp = document.createElement("input");
-  inp.type = "number";
-  inp.step = opts.step ?? "any";
-  if (opts.min!=null) inp.min = opts.min;
-  if (opts.max!=null) inp.max = opts.max;
-  inp.className = opts.className ?? "small";
-  inp.value = (value ?? 0);
-  inp.addEventListener("input", (e)=> onChange(toNum(e.target.value)));
-  return inp;
-}
-function tdEl(content, cls=""){
-  const td=document.createElement("td");
-  if (cls) td.className=cls;
-  if (content instanceof Node) td.appendChild(content);
-  else td.textContent = content;
-  return td;
-}
-function statusFromPF(r, weeksDone, weeksTotal){
-  const done = clamp(toNum(weeksDone),1,4);
-  const total = clamp(toNum(weeksTotal),4,5);
-  const timeShare = done/total;
-
-  const pace = (r.plan.B>0) ? (r.fact.B/r.plan.B) : null;
-  const cplRatio = (r.plan.CPL && r.fact.CPL) ? (r.fact.CPL/r.plan.CPL) : null;
-  const qRatio = (r.plan.Qp>0 && r.fact.Qp!=null) ? (r.fact.Qp/r.plan.Qp) : null;
-  const crRatio = (r.plan.CR>0 && r.fact.CR!=null) ? (r.fact.CR/r.plan.CR) : null;
-
-  let score=0;
-  if (pace!=null){
-    if (pace > timeShare*1.25) score -= 2;
-    else if (pace > timeShare*1.10) score -= 1;
-    else score += 1;
-  }
-  if (cplRatio!=null){
-    if (cplRatio > 1.25) score -= 2;
-    else if (cplRatio > 1.10) score -= 1;
-    else score += 1;
-  }
-  if (qRatio!=null){
-    if (qRatio < 0.70) score -= 2;
-    else if (qRatio < 0.85) score -= 1;
-    else score += 1;
-  }
-  if (crRatio!=null){
-    if (crRatio < 0.70) score -= 2;
-    else if (crRatio < 0.85) score -= 1;
-    else score += 1;
-  }
-  if (score<=-3) return {cls:"bad", text:"RED"};
-  if (score<=-1) return {cls:"warn", text:"YELLOW"};
-  return {cls:"good", text:"GREEN"};
+    acc[k].q = acc[k].leads>0 ? acc[k].tLeads/acc[k].leads : NaN;
+    acc[k].cpl = acc[k].leads>0 ? acc[k].budget/acc[k].leads : NaN;
+    acc[k].cql = acc[k].tLeads>0 ? acc[k].budget/acc[k].tLeads : NaN;
+    acc[k].cr  = acc[k].tLeads>0 ? acc[k].sales/acc[k].tLeads : NaN;
+    acc[k].cps = acc[k].sales>0 ? acc[k].budget/acc[k].sales : NaN;
+    return acc;
+  }, {});
+  return {month, per, tot, used};
 }
 
-/* Funnels */
-function makeSteppedFunnel({title, leads, ql, sales, qPct, crPct}){
-  const maxV = Math.max(leads, ql, sales, 1);
+function diagnoseBottleneck(mk){
+  const {tot, used} = computeMonth(mk);
+  const p=tot.plan, f=tot.fact;
+  if(used<=0 || f.leads<=0) return "Нема факту → внеси тиждень";
 
-  const hh1 = Math.round(160*(leads/maxV));
-  const hh2 = Math.round(160*(ql/maxV));
-  const hh3 = Math.round(160*(ql/maxV));
-  const hh4 = Math.round(160*(sales/maxV));
+  const cplUp = (isFinite(p.cpl) && p.cpl>0 && isFinite(f.cpl) && f.cpl>0) ? (f.cpl/p.cpl) : 1;
+  const qDown = (isFinite(p.q) && p.q>0 && isFinite(f.q) && f.q>0) ? (p.q/f.q) : 1;
+  const crDown = (isFinite(p.cr) && p.cr>0 && isFinite(f.cr) && f.cr>0) ? (p.cr/f.cr) : 1;
 
-  const wrap = document.createElement("div");
-  wrap.className = "fCard";
-
-  const t = document.createElement("div");
-  t.className = "fTitle";
-  t.textContent = title;
-  wrap.appendChild(t);
-
-  const stepWrap = document.createElement("div");
-  stepWrap.className = "stepWrap";
-  wrap.appendChild(stepWrap);
-
-  const s1 = document.createElement("div");
-  s1.className="step";
-  s1.style.left="0%";
-  s1.style.width="40%";
-  s1.style.height = (clamp(hh1,35,170))+"px";
-  s1.style.background = "rgba(205,245,255,.95)";
-  s1.innerHTML = `<div class="cap">К-сть лідів</div><div class="big">${fmtInt(leads)}</div>`;
-  stepWrap.appendChild(s1);
-
-  const s2 = document.createElement("div");
-  s2.className="step";
-  s2.style.left="28%";
-  s2.style.width="28%";
-  s2.style.height = (clamp(hh2,30,160))+"px";
-  s2.style.background = "rgba(160,225,245,.95)";
-  s2.innerHTML = `<div class="cap">Конв. в угоду</div><div class="pct">${(qPct!=null? qPct.toFixed(0):0)}%</div>`;
-  stepWrap.appendChild(s2);
-
-  const s3 = document.createElement("div");
-  s3.className="step";
-  s3.style.left="48%";
-  s3.style.width="22%";
-  s3.style.height = (clamp(hh3,25,150))+"px";
-  s3.style.background = "rgba(120,205,230,.95)";
-  s3.innerHTML = `<div class="cap">К-сть угод</div><div class="big">${fmtInt(ql)}</div>`;
-  stepWrap.appendChild(s3);
-
-  const s4 = document.createElement("div");
-  s4.className="step";
-  s4.style.left="64%";
-  s4.style.width="24%";
-  s4.style.height = (clamp(hh4,22,130))+"px";
-  s4.style.background = "rgba(70,175,205,.95)";
-  s4.innerHTML = `<div class="cap">Конв. в продаж</div><div class="pct">${(crPct!=null? crPct.toFixed(1):0)}%</div>`;
-  stepWrap.appendChild(s4);
-
-  const s5 = document.createElement("div");
-  s5.className="step";
-  s5.style.left="82%";
-  s5.style.width="18%";
-  s5.style.height = (clamp(Math.round(90*(sales/maxV)),18,100))+"px";
-  s5.style.background = "rgba(30,140,175,.95)";
-  s5.innerHTML = `<div class="cap">Продажі</div><div class="big">${fmtInt(sales)}</div>`;
-  stepWrap.appendChild(s5);
-
-  return wrap;
+  const max=Math.max(cplUp,qDown,crDown);
+  if(max===cplUp) return "CPL (дорогі ліди) — креатив/аудиторії/структура";
+  if(max===qDown) return "Якість — кваліфікація/відсів/офер";
+  return "CR у продаж — продажі/скрипт/швидкість/контроль";
 }
 
-/* Renders */
-function renderData(){
-  const tbl = document.getElementById("tblData");
-  const tbody = tbl.querySelector("tbody");
-  tbody.innerHTML = "";
+/* =========================================================
+   5) OPTIMIZERS
+========================================================= */
+function oldOptimizerPlan(monthKey){
+  const month=state.months[monthKey];
+  const mk=monthKey;
 
-  let checks = [];
-  for (const name of CHANNELS){
-    const ch = state.channels[name];
-    const eff = channelEfficiency(name);
-    const tr = document.createElement("tr");
+  const targetKPI = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+  const budgetCap = n(month.planBudget);
+  const budgetConstraint = budgetCap>0;
 
-    tr.appendChild(tdEl(name));
+  const cand = month.groups.map(gr=>{
+    const base = applySeason(BASE_MODEL[gr.key], mk);
+    const eff = applySeason({
+      cpl: n(gr.planCPL || base.cpl),
+      q: n(gr.planQ),
+      cr: n(gr.planCR),
+      maxLeads: n(gr.maxLeads ?? base.maxLeads),
+    }, mk);
+    const kpiPerLead = (month.kpiMode==="sales") ? (eff.q*eff.cr) : eff.q;
+    const costPerKPI = (eff.cpl>0) ? (eff.cpl / Math.max(0.001, kpiPerLead)) : 0;
+    return {key:gr.key, eff, kpiPerLead, costPerKPI};
+  }).sort((a,b)=>a.costPerKPI-b.costPerKPI);
 
-    tr.appendChild(tdEl(inputCell(ch.last.budget, v=>{ ch.last.budget=v; renderAll(); }, {className:"small"})));
-    tr.appendChild(tdEl(inputCell(ch.last.leads, v=>{ ch.last.leads=v; renderAll(); }, {className:"small"})));
-    tr.appendChild(tdEl(inputCell(ch.last.qualityPct, v=>{ ch.last.qualityPct=clamp(v,0,100); renderAll(); }, {className:"tiny", min:0, max:100, step:0.1})));
-    tr.appendChild(tdEl(inputCell(ch.last.convPct, v=>{ ch.last.convPct=clamp(v,0,100); renderAll(); }, {className:"tiny", min:0, max:100, step:0.1})));
+  const add = {};
+  month.groups.forEach(g=>add[g.key]={budget:0,leads:0,kpi:0});
+  let need=targetKPI;
+  let spent=0;
+  let guard=0;
 
-    tr.appendChild(tdEl(eff.cpl==null ? "—" : fmt2(eff.cpl), "num right"));
-    tr.appendChild(tdEl(eff.cps==null ? "—" : fmt2(eff.cps), "num right"));
-
-    tr.appendChild(tdEl(inputCell(ch.cap.maxLeads, v=>{ ch.cap.maxLeads=Math.max(0,v); renderAll(); }, {className:"small"})));
-
-    tbody.appendChild(tr);
-
-    const maxL = toNum(ch.cap.maxLeads);
-    const lastL = toNum(ch.last.leads);
-    if (maxL>0 && lastL>0 && maxL > lastL*4){
-      checks.push(`• ${name}: max лідів (${fmtInt(maxL)}) > 4× минулого місяця (${fmtInt(lastL)}). Це ризик фантазій.`);
-    }
-  }
-
-  const box = document.getElementById("dataChecks");
-  if (!checks.length){
-    box.innerHTML = `<span class="pill">OK</span> Перевірки пройдені. Якщо max лідів не завищений — оптимізатор буде адекватнішим.`;
-  } else {
-    box.innerHTML = `<span class="pill">Увага</span><br/>` + checks.join("<br/>");
-  }
-}
-
-function renderFunnelsFromPlan(CHANNELS, WEEKS){
-  const forecastMode = document.getElementById("forecastMode")?.value || "runrate";
-  const weeksDone = toNum(document.getElementById("weeksDone")?.value || 4);
-  const weeksTotal = toNum(document.getElementById("weeksTotal")?.value || 4);
-
-  const perCh = {};
-  for (const name of CHANNELS){
-    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
-  }
-  const totals = computeTotalsPF(perCh, CHANNELS);
-
-  const group = (names, title)=>{
-    let L=0, QL=0, S=0;
-    for (const n of names){
-      L += perCh[n].fact.L;
-      QL += perCh[n].fact.QL;
-      S += perCh[n].fact.S;
-    }
-    const q = safeDiv(QL,L);
-    const cr = safeDiv(S,QL);
-    return makeSteppedFunnel({
-      title,
-      leads: L,
-      ql: QL,
-      sales: S,
-      qPct: (q??0)*100,
-      crPct: (cr??0)*100
+  while(need>0 && guard<200000){
+    guard++;
+    const pick = cand.find(c=>{
+      const a=add[c.key];
+      const avail = Math.max(0, c.eff.maxLeads - a.leads);
+      if(avail<=0) return false;
+      if(budgetConstraint && c.eff.cpl>0 && (spent + c.eff.cpl) > budgetCap) return false;
+      return c.kpiPerLead>0;
     });
-  };
+    if(!pick) break;
 
-  const top = document.getElementById("funnelsTop");
-  top.innerHTML = "";
-  top.appendChild(group(["Google","Meta","TikTok"], "САЙТ"));
-  top.appendChild(group(["ВЛ","KM"], "DIRECT"));
-  top.appendChild(group(["Повторні"], "ПОВТОРНІ"));
-  top.appendChild(makeSteppedFunnel({
-    title:"ПРОГНОЗ",
-    leads: totals.fore.L,
-    ql: totals.fore.QL,
-    sales: totals.fore.S,
-    qPct: (totals.fore.Qp??0)*100,
-    crPct: (totals.fore.CR??0)*100
+    const a=add[pick.key];
+    const avail = Math.max(0, pick.eff.maxLeads - a.leads);
+    const pack = Math.min(5, avail);
+    a.leads += pack;
+    const b = (pick.eff.cpl>0) ? pack*pick.eff.cpl : 0;
+    a.budget += b;
+    spent += b;
+    const got = pack*pick.kpiPerLead;
+    a.kpi += got;
+    need -= got;
+  }
+
+  const total = Object.values(add).reduce((acc,x)=>{acc.budget+=x.budget; acc.leads+=x.leads; acc.kpi+=x.kpi; return acc;},{budget:0,leads:0,kpi:0});
+  return {add, total, needLeft:need, spent, budgetCap, targetKPI};
+}
+
+function blendWeights(mode){
+  if(mode==="70_30") return {fact:0.7, base:0.3};
+  if(mode==="50_50") return {fact:0.5, base:0.5};
+  if(mode==="90_10") return {fact:0.9, base:0.1};
+  if(mode==="base_only") return {fact:0.0, base:1.0};
+  if(mode==="fact_only") return {fact:1.0, base:0.0};
+  return {fact:0.7, base:0.3};
+}
+
+function newOptimizerPlan(monthKey, baseMonthKey, blendMode){
+  const month=state.months[monthKey];
+  const mk=monthKey;
+
+  const targetKPI = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+  const budgetCap = n(month.planBudget);
+  const budgetConstraint = budgetCap>0;
+
+  const w = blendWeights(blendMode);
+
+  const baseCompute = computeMonth(baseMonthKey);
+  const basePerfByKey = new Map(baseCompute.per.map(p=>{
+    const kpiCost = (baseCompute.month.kpiMode==="sales") ? p.fact.cps : p.fact.cql;
+    const kpiPerLead = (baseCompute.month.kpiMode==="sales")
+      ? (p.fact.q * (isFinite(p.fact.cr)?p.fact.cr: (p.plan.cr||0)))
+      : (p.fact.q);
+    return [p.key, { factCPL:p.fact.cpl, factQ:p.fact.q, factCR:p.fact.cr, factKpiCost:kpiCost, factKpiPerLead:kpiPerLead }];
   }));
 
-  const target = document.getElementById("targetFunnel");
-  target.innerHTML = "";
-  target.appendChild(makeSteppedFunnel({
-    title:"ЦІЛЬ",
-    leads: totals.plan.L,
-    ql: totals.plan.QL,
-    sales: totals.plan.S,
-    qPct: (totals.plan.Qp??0)*100,
-    crPct: (totals.plan.CR??0)*100
-  }));
+  const cand = month.groups.map(gr=>{
+    const base = applySeason(BASE_MODEL[gr.key], mk);
+    const baseEff = applySeason({
+      cpl: n(gr.planCPL || base.cpl),
+      q: n(gr.planQ),
+      cr: n(gr.planCR),
+      maxLeads: n(gr.maxLeads ?? base.maxLeads)
+    }, mk);
+
+    const perf = basePerfByKey.get(gr.key) || {};
+    const factCPL = (isFinite(perf.factCPL) && perf.factCPL>0) ? perf.factCPL : baseEff.cpl;
+    const factQ   = (isFinite(perf.factQ)   && perf.factQ>0)   ? perf.factQ   : baseEff.q;
+    const factCR  = (isFinite(perf.factCR)  && perf.factCR>0)  ? perf.factCR  : baseEff.cr;
+
+    const factEff = applySeason({cpl:factCPL,q:factQ,cr:factCR,maxLeads:baseEff.maxLeads}, mk);
+
+    const blended = {
+      cpl: factEff.cpl*w.fact + baseEff.cpl*w.base,
+      q:   factEff.q*w.fact   + baseEff.q*w.base,
+      cr:  factEff.cr*w.fact  + baseEff.cr*w.base,
+      maxLeads: baseEff.maxLeads
+    };
+
+    const kpiPerLead = (month.kpiMode==="sales") ? (blended.q*blended.cr) : blended.q;
+    const costPerKPI = (blended.cpl>0) ? (blended.cpl / Math.max(0.001, kpiPerLead)) : 0;
+
+    return {key:gr.key, blended, kpiPerLead, costPerKPI};
+  }).sort((a,b)=>a.costPerKPI-b.costPerKPI);
+
+  const add = {};
+  month.groups.forEach(g=>add[g.key]={budget:0,leads:0,kpi:0});
+  let need=targetKPI;
+  let spent=0;
+  let guard=0;
+
+  while(need>0 && guard<200000){
+    guard++;
+    const pick = cand.find(c=>{
+      const a=add[c.key];
+      const avail=Math.max(0, c.blended.maxLeads - a.leads);
+      if(avail<=0) return false;
+      if(budgetConstraint && c.blended.cpl>0 && (spent + c.blended.cpl) > budgetCap) return false;
+      return c.kpiPerLead>0;
+    });
+    if(!pick) break;
+
+    const a=add[pick.key];
+    const avail=Math.max(0, pick.blended.maxLeads - a.leads);
+    const pack=Math.min(5, avail);
+    a.leads += pack;
+    const b=(pick.blended.cpl>0)? pack*pick.blended.cpl : 0;
+    a.budget += b;
+    spent += b;
+    const got=pack*pick.kpiPerLead;
+    a.kpi += got;
+    need -= got;
+  }
+
+  const total = Object.values(add).reduce((acc,x)=>{acc.budget+=x.budget; acc.leads+=x.leads; acc.kpi+=x.kpi; return acc;},{budget:0,leads:0,kpi:0});
+  return {add, total, needLeft:need, spent, budgetCap, targetKPI, cand};
 }
 
-function renderPF(){
-  const forecastMode = document.getElementById("forecastMode").value;
-  const weeksDone = toNum(document.getElementById("weeksDone").value);
-  const weeksTotal = toNum(document.getElementById("weeksTotal").value);
-
-  const perCh = {};
-  for (const name of CHANNELS){
-    perCh[name] = computeChannelPF(state.channels[name], forecastMode, weeksDone, weeksTotal);
+function applyPlanToMonth(planObj){
+  const month=getMonth();
+  Object.entries(planObj.add).forEach(([k,v])=>{
+    const g=month.groups.find(x=>x.key===k);
+    if(!g) return;
+    g.planLeads = Math.max(0, n(v.leads));
+    g.planBudget = Math.max(0, n(v.budget));
+    g.planCPL = (g.planLeads>0) ? (g.planBudget/g.planLeads) : Math.max(0,n(g.planCPL));
+  });
+  if(n(month.planBudget)<=0){
+    month.planBudget = Math.round(month.groups.reduce((a,x)=>a+n(x.planBudget),0));
   }
-  const totals = computeTotalsPF(perCh, CHANNELS);
+}
 
-  const pfKpis = document.getElementById("pfKpis");
-  pfKpis.innerHTML = "";
-  const items = [
-    {label:"Бюджет", plan:totals.plan.B, fact:totals.fact.B, fore:totals.fore.B, fmt:fmtMoney},
-    {label:"Ліди", plan:totals.plan.L, fact:totals.fact.L, fore:totals.fore.L, fmt:fmtInt},
-    {label:"CPL", plan:totals.plan.CPL, fact:totals.fact.CPL, fore:totals.fore.CPL, fmt:fmt2},
-    {label:"Кваліф.", plan:totals.plan.QL, fact:totals.fact.QL, fore:totals.fore.QL, fmt:fmtInt},
-    {label:"Продажі", plan:totals.plan.S, fact:totals.fact.S, fore:totals.fore.S, fmt:fmtInt},
-    {label:"CPS", plan:totals.plan.CPS, fact:totals.fact.CPS, fore:totals.fore.CPS, fmt:fmt2}
-  ];
-  for (const it of items){
-    const div = document.createElement("div");
-    div.className="kpi";
-    div.innerHTML = `
-      <div class="label"><span>${it.label}</span><span class="pill">PLAN / FACT / Forecast</span></div>
-      <div class="value">${it.fmt(it.plan)} / ${it.fmt(it.fact)} / ${it.fmt(it.fore)}</div>
-      <div class="meta">
-        <span class="pill">ΔFact: ${ (it.plan && it.fact!=null) ? (((it.fact-it.plan)/it.plan)*100).toFixed(1)+"%" : "—" }</span>
-        <span class="pill">ΔFore: ${ (it.plan && it.fore!=null) ? (((it.fore-it.plan)/it.plan)*100).toFixed(1)+"%" : "—" }</span>
-      </div>
-    `;
-    pfKpis.appendChild(div);
+/* =========================================================
+   6) WEEKLY FIX
+========================================================= */
+function weeklyFix(){
+  const mk=state.activeMonth;
+  const {month, tot, used} = computeMonth(mk);
+  const W=n(month.weeksInMonth);
+  const remainWeeks = Math.max(0, W-used);
+  if(remainWeeks<=0){
+    return {ok:false, msg:"Місяць уже заповнений фактом по тижнях. Перейди на наступний місяць.", patch:null};
   }
 
-  const tbl = document.getElementById("tblPF");
-  const tbody = tbl.querySelector("tbody");
-  tbody.innerHTML = "";
+  const target = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+  const done = (month.kpiMode==="sales") ? tot.fact.sales : tot.fact.tLeads;
+  const need = Math.max(0, target - done);
 
-  for (const name of CHANNELS){
-    const ch = state.channels[name];
-    const r = perCh[name];
-    const st = statusFromPF(r, weeksDone, weeksTotal);
-    const tr = document.createElement("tr");
+  if(need<=0){
+    return {ok:true, msg:"KPI вже виконаний фактом. Не треба добивати бюджетом. Зафіксуй якість і CR.", patch:null};
+  }
 
-    tr.appendChild(tdEl(name));
-    const s = document.createElement("span");
-    s.className = "status "+st.cls;
-    s.textContent = st.text;
-    tr.appendChild(tdEl(s));
+  const bottle = diagnoseBottleneck(mk);
+  if(bottle.startsWith("CR")){
+    return {
+      ok:true,
+      msg:`Головна проблема: <b>${bottle}</b>.<br><br>
+      Бюджет зараз — не рішення. Потрібно: (1) швидкість відповіді ≤5 хв, (2) скрипт кваліфікації, (3) контроль дзвінків, (4) офер/гарантії, (5) дисципліна follow-up.<br><br>
+      Я дам бюджетні правки тільки після того, як CR повернеться.`,
+      patch:null
+    };
+  }
 
-    tr.appendChild(tdEl(inputCell(ch.plan.budget, v=>{ch.plan.budget=v; renderAll();}, {className:"small"})));
-    tr.appendChild(tdEl(inputCell(ch.plan.leads, v=>{ch.plan.leads=v; renderAll();}, {className:"small"})));
-    tr.appendChild(tdEl(r.plan.CPL==null?"—":fmt2(r.plan.CPL), "num right"));
-    tr.appendChild(tdEl(inputCell(ch.plan.qualityPct, v=>{ch.plan.qualityPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
-    tr.appendChild(tdEl(fmtInt(r.plan.QL), "num right"));
-    tr.appendChild(tdEl(inputCell(ch.plan.convPct, v=>{ch.plan.convPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
-    tr.appendChild(tdEl(fmtInt(r.plan.S), "num right"));
-    tr.appendChild(tdEl(r.plan.CPS==null?"—":fmt2(r.plan.CPS), "num right"));
+  const monthObj = getMonth();
+  const add = {};
+  monthObj.groups.forEach(g=>add[g.key]={addLeads:0, addBudget:0, addKPI:0});
 
-    tr.appendChild(tdEl(fmtMoney(r.fact.B), "num right"));
-    tr.appendChild(tdEl(fmtInt(r.fact.L), "num right"));
-    tr.appendChild(tdEl(r.fact.CPL==null?"—":fmt2(r.fact.CPL), "num right"));
-    tr.appendChild(tdEl(r.fact.Qp==null?"—":fmtPctRatio(r.fact.Qp), "num right"));
-    tr.appendChild(tdEl(fmtInt(r.fact.QL), "num right"));
-    tr.appendChild(tdEl(r.fact.CR==null?"—":fmtPctRatio(r.fact.CR), "num right"));
-    tr.appendChild(tdEl(fmtInt(r.fact.S), "num right"));
-    tr.appendChild(tdEl(r.fact.CPS==null?"—":fmt2(r.fact.CPS), "num right"));
+  const scored = monthObj.groups.map(gr=>{
+    const f = sumFactForGroup(gr, used);
+    const effCPL = (isFinite(f.cpl) && f.cpl>0) ? f.cpl : (n(gr.planCPL)>0 ? n(gr.planCPL) : applySeason(BASE_MODEL[gr.key], mk).cpl);
+    const effQ = (isFinite(f.q) && f.leads>0) ? f.q : n(gr.planQ);
+    const effCR = (isFinite(f.cr) && f.tLeads>0) ? f.cr : n(gr.planCR);
+    const kpiPerLead = (monthObj.kpiMode==="sales") ? (effQ*effCR) : effQ;
+    const costPerKPI = (effCPL>0) ? (effCPL / Math.max(0.001,kpiPerLead)) : 0;
+    const maxLeads = Math.max(0, n(gr.maxLeads));
+    const availLeads = Math.max(0, maxLeads - f.leads);
+    return {key:gr.key, effCPL, effQ, effCR, kpiPerLead, costPerKPI, availLeads};
+  }).sort((a,b)=>a.costPerKPI-b.costPerKPI);
 
-    tr.appendChild(tdEl(fmtInt(r.fore.S), "num right"));
-    tr.appendChild(tdEl(r.fore.CPS==null?"—":fmt2(r.fore.CPS), "num right"));
+  const budgetLeft = Math.max(0, n(monthObj.planBudget) - tot.fact.budget);
+  const budgetConstraint = n(monthObj.planBudget)>0;
 
-    for (const w of WEEKS){
-      const wk = ch.weeks[w];
-      tr.appendChild(tdEl(inputCell(wk.budget, v=>{wk.budget=v; renderAll();}, {className:"small"})));
-      tr.appendChild(tdEl(inputCell(wk.leads, v=>{wk.leads=v; renderAll();}, {className:"small"})));
-      tr.appendChild(tdEl(inputCell(wk.qualityPct, v=>{wk.qualityPct=clamp(v,0,100); renderAll();}, {className:"tiny", min:0, max:100, step:0.1})));
-      tr.appendChild(tdEl(inputCell(wk.sales, v=>{wk.sales=v; renderAll();}, {className:"small"})));
-    }
+  let needLeft = need;
+  let spent=0;
+  let guard=0;
+
+  while(needLeft>0 && guard<200000){
+    guard++;
+    const cand = scored.find(p=>{
+      const a=add[p.key];
+      if((p.availLeads - a.addLeads)<=0) return false;
+      if(budgetConstraint && p.effCPL>0 && (spent + p.effCPL) > budgetLeft) return false;
+      return p.kpiPerLead>0;
+    });
+    if(!cand) break;
+
+    const a=add[cand.key];
+    const pack = Math.min(5, cand.availLeads - a.addLeads);
+    a.addLeads += pack;
+    const b = (cand.effCPL>0)? pack*cand.effCPL : 0;
+    a.addBudget += b;
+    spent += b;
+    const got = pack*cand.kpiPerLead;
+    a.addKPI += got;
+    needLeft -= got;
+  }
+
+  const sum = Object.values(add).reduce((acc,x)=>{acc.leads+=x.addLeads; acc.budget+=x.addBudget; acc.kpi+=x.addKPI; return acc;},{leads:0,budget:0,kpi:0});
+  const kpiName = (monthObj.kpiMode==="sales") ? "продажів" : "цільових";
+
+  let msg = `Потрібно добрати <b>${fmt.num(need,2)}</b> ${kpiName} до кінця місяця.<br>
+  Рекомендовано додати ≈ <b>${fmt.int(sum.leads)} лідів</b> та ≈ <b>${fmt.uah(sum.budget)}</b> (по найкращих каналах).`;
+
+  if(budgetConstraint && spent>=budgetLeft*0.99){
+    msg += `<br><br><b>Обмеження бюджету:</b> залишок ≈ ${fmt.uah(budgetLeft)}. Якщо KPI критичний — або піднімай бюджет, або піднімай Quality/CR.`;
+  }
+  if(sum.kpi < need*0.85){
+    msg += `<br><br><b>Чесно:</b> потенціалу каналів не вистачає. Варіанти: (1) підняти Quality, (2) підняти CR, (3) додати джерела, (4) збільшити бюджет.`;
+  }
+
+  return {ok:true, msg, add, bottle};
+}
+
+function applyWeeklyFix(fix){
+  if(!fix || !fix.add) return false;
+  const month=getMonth();
+  Object.entries(fix.add).forEach(([k,v])=>{
+    const g = month.groups.find(x=>x.key===k);
+    if(!g) return;
+    g.planLeads  = n(g.planLeads) + n(v.addLeads);
+    g.planBudget = n(g.planBudget) + n(v.addBudget);
+    g.planCPL = (g.planLeads>0) ? (g.planBudget/g.planLeads) : g.planCPL;
+  });
+  return true;
+}
+
+/* =========================================================
+   7) SHEET
+========================================================= */
+const COLS = [
+  {k:"planBudget", t:"Бюджет ПЛАН", type:"uah"},
+  {k:"planLeads",  t:"Ліди ПЛАН", type:"int"},
+  {k:"planCPL",    t:"CPL ПЛАН (грн)", type:"uah"},
+  {k:"planQ",      t:"Якість ПЛАН %", type:"pct"},
+  {k:"planCR",     t:"CR ПЛАН %", type:"pct"},
+  {k:"maxLeads",   t:"Ліміт лідів/міс", type:"int"},
+  {k:"w_budget",   t:"Бюджет ФАКТ (тиждень)", type:"uah"},
+  {k:"w_leads",    t:"Ліди ФАКТ (тиждень)", type:"int"},
+  {k:"w_q",        t:"Якість ФАКТ %", type:"pct"},
+  {k:"w_sales",    t:"Продажі ФАКТ (тиждень)", type:"int"},
+];
+
+function currentWeekIndex(){
+  const w = n(document.getElementById("weekSel").value || 0);
+  return clamp(w, 0, 4);
+}
+
+function buildSheet(){
+  const month=getMonth();
+  const table=document.getElementById("sheet");
+  table.innerHTML="";
+
+  const thead=document.createElement("thead");
+  const trh=document.createElement("tr");
+  const th0=document.createElement("th"); th0.textContent="Канал"; trh.appendChild(th0);
+  COLS.forEach(c=>{ const th=document.createElement("th"); th.textContent=c.t; trh.appendChild(th); });
+  thead.appendChild(trh);
+  table.appendChild(thead);
+
+  const tbody=document.createElement("tbody");
+  month.groups.forEach((gr, rIdx)=>{
+    const tr=document.createElement("tr");
+    const tdName=document.createElement("td");
+    tdName.textContent = GROUPS.find(x=>x.key===gr.key).name;
+    tr.appendChild(tdName);
+
+    COLS.forEach((c, cIdx)=>{
+      const td=document.createElement("td");
+      const inp=document.createElement("input");
+      inp.className="cell num";
+      inp.dataset.r=rIdx; inp.dataset.c=cIdx; inp.dataset.k=c.k;
+      inp.placeholder="0";
+      inp.onfocus=()=>{try{inp.select()}catch(e){}};
+      inp.oninput=debounce(()=>{ if(!isEditUnlocked()) return; writeCell(inp); markDirty(); },120);
+      inp.onkeydown=(e)=>nav(e, inp);
+
+      inp.onpaste=(e)=>{
+        if(!state.pasteHot) return;
+        if(!isEditUnlocked()) return;
+        const text=(e.clipboardData||window.clipboardData).getData("text");
+        if(!text || (!text.includes("\t") && !text.includes("\n"))) return;
+        e.preventDefault();
+        pasteGrid(text, n(inp.dataset.r), n(inp.dataset.c));
+        toast("✅ Вставлено з таблиці. Перевір значення.");
+      };
+
+      td.appendChild(inp);
+      tr.appendChild(td);
+    });
 
     tbody.appendChild(tr);
-  }
+  });
+  table.appendChild(tbody);
 
-  const tr = document.createElement("tr");
-  tr.className="total";
-  tr.appendChild(tdEl("TOTAL"));
-  tr.appendChild(tdEl("—"));
-
-  tr.appendChild(tdEl(fmtMoney(totals.plan.B),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.plan.L),"num right"));
-  tr.appendChild(tdEl(totals.plan.CPL==null?"—":fmt2(totals.plan.CPL),"num right"));
-  tr.appendChild(tdEl(totals.plan.Qp==null?"—":fmtPctRatio(totals.plan.Qp),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.plan.QL),"num right"));
-  tr.appendChild(tdEl(totals.plan.CR==null?"—":fmtPctRatio(totals.plan.CR),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.plan.S),"num right"));
-  tr.appendChild(tdEl(totals.plan.CPS==null?"—":fmt2(totals.plan.CPS),"num right"));
-
-  tr.appendChild(tdEl(fmtMoney(totals.fact.B),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.fact.L),"num right"));
-  tr.appendChild(tdEl(totals.fact.CPL==null?"—":fmt2(totals.fact.CPL),"num right"));
-  tr.appendChild(tdEl(totals.fact.Qp==null?"—":fmtPctRatio(totals.fact.Qp),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.fact.QL),"num right"));
-  tr.appendChild(tdEl(totals.fact.CR==null?"—":fmtPctRatio(totals.fact.CR),"num right"));
-  tr.appendChild(tdEl(fmtInt(totals.fact.S),"num right"));
-  tr.appendChild(tdEl(totals.fact.CPS==null?"—":fmt2(totals.fact.CPS),"num right"));
-
-  tr.appendChild(tdEl(fmtInt(totals.fore.S),"num right"));
-  tr.appendChild(tdEl(totals.fore.CPS==null?"—":fmt2(totals.fore.CPS),"num right"));
-
-  for (const _ of WEEKS){
-    tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl("")); tr.appendChild(tdEl(""));
-  }
-  tbody.appendChild(tr);
-
-  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
-  renderFunnelsFromPlan(CHANNELS, WEEKS);
+  refreshSheetValues();
 }
 
-function renderOptimizer(lastResult=null){
-  const budgetTotal = toNum(document.getElementById("planBudget").value);
-  const salesTarget = toNum(document.getElementById("planSales").value);
-  const riskMode = document.getElementById("riskMode").value;
-  const stepMode = document.getElementById("stepMode").value;
+function refreshSheetValues(){
+  const month=getMonth();
+  const w=currentWeekIndex();
+  document.querySelectorAll("#sheet .cell").forEach(inp=>{
+    const r=n(inp.dataset.r), c=n(inp.dataset.c);
+    const col=COLS[c];
+    const gr=month.groups[r];
+    let v=0;
+    if(col.k==="planBudget") v=gr.planBudget;
+    else if(col.k==="planLeads") v=gr.planLeads;
+    else if(col.k==="planCPL") v=gr.planCPL;
+    else if(col.k==="planQ") v=Math.round(gr.planQ*10000)/100;
+    else if(col.k==="planCR") v=Math.round(gr.planCR*10000)/100;
+    else if(col.k==="maxLeads") v=gr.maxLeads;
+    else if(col.k==="w_budget") v=gr.weeks[w].budget;
+    else if(col.k==="w_leads") v=gr.weeks[w].leads;
+    else if(col.k==="w_q") v=Math.round(gr.weeks[w].q*10000)/100;
+    else if(col.k==="w_sales") v=gr.weeks[w].sales;
+    inp.value = (v===0 ? "" : v);
+  });
+}
 
-  const res = lastResult ?? optimizeAllocation({budgetTotal, salesTarget, riskMode, stepMode, CHANNELS});
-  const kpiEl = document.getElementById("optKpis");
-  const allocEl = document.getElementById("allocRows");
-  const notesEl = document.getElementById("optNotes");
+function writeCell(inp){
+  const month=getMonth();
+  const r=n(inp.dataset.r), c=n(inp.dataset.c);
+  const col=COLS[c];
+  const gr=month.groups[r];
+  const raw=(inp.value||"").toString().replace(",",".").trim();
+  const val = raw==="" ? 0 : n(raw);
+  const w=currentWeekIndex();
 
-  kpiEl.innerHTML = "";
-  allocEl.innerHTML = "";
+  switch(col.k){
+    case "planBudget": gr.planBudget=Math.max(0,val); break;
+    case "planLeads":  gr.planLeads=Math.max(0,val); break;
+    case "planCPL":    gr.planCPL=Math.max(0,val); break;
+    case "planQ":      gr.planQ=clamp(val/100,0,1); break;
+    case "planCR":     gr.planCR=clamp(val/100,0,1); break;
+    case "maxLeads":   gr.maxLeads=Math.max(0,val); break;
+    case "w_budget":   gr.weeks[w].budget=Math.max(0,val); break;
+    case "w_leads":    gr.weeks[w].leads=Math.max(0,val); break;
+    case "w_q":        gr.weeks[w].q=clamp(val/100,0,1); break;
+    case "w_sales":    gr.weeks[w].sales=Math.max(0,val); break;
+  }
+}
 
-  if (!res.ok && res.reason){
-    notesEl.innerHTML = `<span class="pill">STOP</span> <span class="dangerText"><b>${res.reason}</b></span>`;
-    return res;
+function nav(e, inp){
+  const r=n(inp.dataset.r), c=n(inp.dataset.c);
+  let nr=r, nc=c;
+  const key=e.key;
+  if(key==="Enter"){ e.preventDefault(); nr=r+1; }
+  else if(key==="ArrowDown"){ e.preventDefault(); nr=r+1; }
+  else if(key==="ArrowUp"){ e.preventDefault(); nr=r-1; }
+  else if(key==="ArrowRight"){ if(inp.selectionStart===inp.value.length){ e.preventDefault(); nc=c+1; } }
+  else if(key==="ArrowLeft"){ if(inp.selectionStart===0){ e.preventDefault(); nc=c-1; } }
+  else return;
+
+  nr=clamp(nr,0,GROUPS.length-1);
+  nc=clamp(nc,0,COLS.length-1);
+  const next=document.querySelector(`#sheet .cell[data-r="${nr}"][data-c="${nc}"]`);
+  if(next) next.focus();
+}
+
+function pasteGrid(text, startR, startC){
+  const month=getMonth();
+  const rows=text.replace(/\r/g,"").split("\n").filter(x=>x.length>0);
+  const grid=rows.map(r=>r.split("\t"));
+  for(let i=0;i<grid.length;i++){
+    for(let j=0;j<grid[i].length;j++){
+      const r=startR+i, c=startC+j;
+      if(r>=month.groups.length || c>=COLS.length) continue;
+      const inp=document.querySelector(`#sheet .cell[data-r="${r}"][data-c="${c}"]`);
+      if(!inp) continue;
+      inp.value=grid[i][j];
+      writeCell(inp);
+    }
+  }
+  refreshSheetValues();
+  markDirty();
+}
+
+/* =========================================================
+   8) CHARTS
+========================================================= */
+function clearCanvas(ctx){
+  const w=ctx.canvas.width, h=ctx.canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.save();
+  ctx.globalAlpha=.10; ctx.strokeStyle="white";
+  for(let x=0;x<w;x+=70){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for(let y=0;y<h;y+=55){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r, fill, stroke){
+  if(w<2*r) r=w/2; if(h<2*r) r=h/2;
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
+
+function drawLegend(ctx, items){
+  ctx.save();
+  ctx.font="12px var(--sans)";
+  let x=70, y=36;
+  items.forEach(it=>{
+    ctx.fillStyle=it.color; ctx.fillRect(x,y-10,12,12);
+    ctx.fillStyle="rgba(232,238,247,.92)";
+    ctx.fillText(it.label, x+18, y);
+    x += 18 + ctx.measureText(it.label).width + 18;
+  });
+  ctx.restore();
+}
+
+function drawGroupedBars(ctx, labels, series, yLabel, title){
+  clearCanvas(ctx);
+  const w=ctx.canvas.width, h=ctx.canvas.height;
+  const pad={l:74,r:22,t:34,b:52};
+  const innerW=w-pad.l-pad.r, innerH=h-pad.t-pad.b;
+
+  let mx=1;
+  series.forEach(s=>s.data.forEach(v=>{ if(isFinite(v)) mx=Math.max(mx, v); }));
+
+  ctx.save();
+  ctx.fillStyle="rgba(232,238,247,.95)";
+  ctx.font="1000 14px var(--sans)";
+  ctx.fillText(title, pad.l, 20);
+  ctx.fillStyle="rgba(157,176,200,.88)";
+  ctx.font="12px var(--sans)";
+  ctx.fillText("X: період", pad.l, h-10);
+  ctx.translate(16, pad.t + innerH/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText("Y: "+yLabel, 0, 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.strokeStyle="rgba(255,255,255,.12)";
+  ctx.fillStyle="rgba(157,176,200,.88)";
+  ctx.font="11px var(--sans)";
+  const ticks=4;
+  for(let i=0;i<=ticks;i++){
+    const y=pad.t + innerH - (innerH*i/ticks);
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l+innerW, y); ctx.stroke();
+    const v = mx*(i/ticks);
+    ctx.fillText(Math.round(v).toLocaleString("uk-UA"), 8, y+3);
+  }
+  ctx.restore();
+
+  const groups=labels.length, bars=series.length;
+  const groupW=innerW/groups;
+  const barW=Math.min(46, (groupW-18)/bars);
+  const gap=6;
+
+  for(let gi=0;gi<groups;gi++){
+    const gx=pad.l + gi*groupW;
+
+    ctx.save();
+    ctx.fillStyle="rgba(157,176,200,.88)";
+    ctx.font="12px var(--sans)";
+    const lab=labels[gi];
+    ctx.fillText(lab, gx+groupW/2-ctx.measureText(lab).width/2, pad.t+innerH+26);
+    ctx.restore();
+
+    for(let bi=0;bi<bars;bi++){
+      const s=series[bi];
+      const v=s.data[gi];
+      if(!isFinite(v) || v<0) continue;
+      const bh = innerH*(v/mx);
+      const x = gx+9 + bi*(barW+gap);
+      const y = pad.t + innerH - bh;
+
+      ctx.save();
+      ctx.fillStyle=s.color;
+      ctx.strokeStyle="rgba(255,255,255,.16)";
+      roundRect(ctx, x, y, barW, bh, 10, true, true);
+
+      ctx.fillStyle="rgba(232,238,247,.95)";
+      ctx.font="11px var(--sans)";
+      const txt=(v>=1000)? Math.round(v).toLocaleString("uk-UA") : (Math.round(v*10)/10).toString();
+      ctx.fillText(txt, x, y-6);
+      ctx.restore();
+    }
+  }
+  drawLegend(ctx, series.map(s=>({label:s.label,color:s.color})));
+}
+
+function drawFunnel(ctx, plan, fact, fore, title){
+  clearCanvas(ctx);
+  const w=ctx.canvas.width, h=ctx.canvas.height;
+
+  ctx.save();
+  ctx.fillStyle="rgba(232,238,247,.95)";
+  ctx.font="1000 14px var(--sans)";
+  ctx.fillText(title, 74, 20);
+  ctx.restore();
+
+  const pad={l:74,r:22,t:44,b:38};
+  const innerW=w-pad.l-pad.r, innerH=h-pad.t-pad.b;
+
+  const stages=["Ліди","Цільові","Продажі"];
+  const P=[plan.leads, plan.tLeads, plan.sales];
+  const F=[fact.leads, fact.tLeads, fact.sales];
+  const R=[fore.leads, fore.tLeads, fore.sales];
+
+  const mx=Math.max(1, ...P, ...F, ...R);
+
+  const colW=innerW/3;
+  const colors=["rgba(107,183,184,.85)","rgba(255,204,102,.78)","rgba(255,107,122,.78)"];
+
+  for(let i=0;i<3;i++){
+    const x0=pad.l + i*colW;
+    const stage=stages[i];
+
+    ctx.save();
+    ctx.fillStyle="rgba(157,176,200,.88)";
+    ctx.font="12px var(--sans)";
+    ctx.fillText(stage, x0+colW/2-ctx.measureText(stage).width/2, 36);
+    ctx.restore();
+
+    const arr=[P[i],F[i],R[i]];
+    const barW=Math.min(52, (colW-26)/3);
+    const gap=8;
+    const baseY=pad.t+innerH;
+
+    ["План","Факт","Прогноз"].forEach((lab,bi)=>{
+      const v=arr[bi];
+      const bh=innerH*(v/mx);
+      const x=x0+13+bi*(barW+gap);
+      const y=baseY-bh;
+
+      ctx.save();
+      ctx.fillStyle=colors[i];
+      ctx.globalAlpha = bi===0?0.55:(bi===1?0.85:0.70);
+      ctx.strokeStyle="rgba(255,255,255,.16)";
+      roundRect(ctx,x,y,barW,bh,10,true,true);
+      ctx.globalAlpha=1;
+      ctx.fillStyle="rgba(232,238,247,.95)";
+      ctx.font="11px var(--sans)";
+      ctx.fillText((Math.round(v*10)/10).toLocaleString("uk-UA"), x, y-6);
+      ctx.restore();
+    });
   }
 
-  const s = res.summary;
-  const progress = (s.salesTarget>0) ? (s.salesTotal / s.salesTarget) : 0;
-  const progressCls = progress>=1 ? "" : (progress>=0.85 ? "warn" : "bad");
-
-  const kpis = [
-    {label:"Ціль продажів", val: fmtInt(s.salesTarget), meta:`Очікувано: <b class="num">${fmtInt(s.salesTotal)}</b>`},
-    {label:"Виконання", val: (s.salesTarget>0 ? (progress*100).toFixed(1)+"%" : "—"), meta:`Недобір: <b class="num">${fmtInt(s.shortfall)}</b>`},
-    {label:"Бюджет", val: fmtMoney(s.budgetTotal), meta:`Викор.: <b class="num">${fmtMoney(s.budgetUsed)}</b>`},
-    {label:"CPS (очікув.)", val: (s.cpsTotal==null?"—":fmt2(s.cpsTotal)), meta:`Формула: CPL/(Q×CR)`},
-    {label:"Ліди", val: fmtInt(s.leadsTotal), meta:`Кваліф.: <b class="num">${fmtInt(s.qualifiedTotal)}</b>`},
-    {label:"Теор. max продажів", val: fmtInt(s.maxSalesPossible), meta:`По max лідах (без бюджету)`}
+  const eff = [
+    {label:"CPL", v:fore.cpl},
+    {label:"CQL", v:fore.cql},
+    {label:"CPS", v:fore.cps},
+    {label:"Q",   v:fore.q, pct:true},
+    {label:"CR",  v:fore.cr, pct:true},
   ];
-  for (const it of kpis){
-    const div = document.createElement("div");
-    div.className="kpi";
-    div.innerHTML = `
-      <div class="label"><span>${it.label}</span><span class="pill">Оптимізація</span></div>
-      <div class="value">${it.val}</div>
-      <div class="meta">${it.meta}</div>
-    `;
-    kpiEl.appendChild(div);
-  }
 
-  const pbWrap = document.createElement("div");
-  pbWrap.style.margin = "12px 0 0";
-  const pb = document.createElement("div");
-  pb.className = "progress "+progressCls;
-  const i = document.createElement("i");
-  i.style.width = clamp(progress*100,0,120).toFixed(1)+"%";
-  pb.appendChild(i);
-  pbWrap.appendChild(pb);
-  kpiEl.appendChild(pbWrap);
+  let x=74, y=h-12;
+  ctx.save();
+  ctx.font="12px var(--sans)";
+  eff.forEach(e=>{
+    const txt = e.pct ? `${e.label}: ${fmt.pct01(e.v)}` : `${e.label}: ${fmt.uah(e.v)}`;
+    ctx.fillStyle="rgba(157,176,200,.9)";
+    ctx.fillText(txt, x, y);
+    x += ctx.measureText(txt).width + 18;
+  });
+  ctx.restore();
+}
 
-  const totalUsed = Math.max(1, s.budgetUsed);
+function drawChannelsChart(ctx, per, mode, title){
+  const labels=per.map(p=>p.name.replace(" (Search/PMax/YT)",""));
+  const kpi = per.map(p=>{
+    if(mode==="sales") return p.fore.sales;
+    return p.fore.tLeads;
+  });
+  const budget = per.map(p=>p.fore.budget);
+  drawGroupedBars(ctx, labels, [
+    {label:mode==="sales"?"KPI (продажі)":"KPI (цільові)", color:"rgba(255,204,102,.78)", data:kpi},
+    {label:"Бюджет", color:"rgba(107,183,184,.85)", data:budget},
+  ], "обсяг", title);
+}
 
-  for (const name of CHANNELS){
-    const a = res.alloc[name] || {leads:0,budget:0,sales:0,qualified:0, eff:null};
-    const row = document.createElement("div");
-    row.className="row";
-    row.innerHTML = `
-      <div class="name">${name}</div>
-      <div class="bar"><i style="width:${(a.budget/totalUsed*100).toFixed(1)}%"></i></div>
-      <div class="vals">
-        <span class="pill">Бюджет: ${fmtMoney(a.budget)}</span>
-        <span class="pill">Ліди: ${fmtInt(a.leads)}</span>
-        <span class="pill">Продажі: ${fmtInt(a.sales)}</span>
-        <span class="pill">CPS: ${a.budget>0 && a.sales>0 ? fmt2(a.budget/a.sales) : "—"}</span>
-      </div>
-    `;
-    allocEl.appendChild(row);
-  }
+function historySeries(){
+  const keys = state.historyOrder.filter(k=>state.months[k]);
+  const labels=[], kpiPlan=[], kpiFact=[], bPlan=[], bFact=[];
+  keys.forEach(k=>{
+    const {month, tot} = computeMonth(k);
+    labels.push(k.slice(5));
+    const kp = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+    const kf = (month.kpiMode==="sales") ? tot.fact.sales : tot.fact.tLeads;
+    kpiPlan.push(kp);
+    kpiFact.push(kf);
+    bPlan.push(n(month.planBudget));
+    bFact.push(tot.fact.budget);
+  });
+  return {labels, kpiPlan, kpiFact, bPlan, bFact};
+}
 
-  let msg = "";
-  if (s.shortfall>0){
-    msg += `<span class="pill">Не дотягуємо</span> <span class="dangerText"><b>Очікуваний недобір ${fmtInt(s.shortfall)} продажів.</b></span><br/>`;
-    msg += `Причини: або <b>бюджету мало</b>, або <b>max лідів</b> по каналах занизький, або минуломісячні <b>Q/CR</b> слабкі.<br/><br/>`;
+/* =========================================================
+   9) DASH
+========================================================= */
+function kpiCard(title, value, sub, tone=""){
+  const div=document.createElement("div");
+  div.className="k"+(tone?(" "+tone):"");
+  div.innerHTML=`<div class="t">${title}</div><div class="v">${value}</div><div class="s">${sub}</div>`;
+  return div;
+}
+
+function renderDash(){
+  const mk=state.activeMonth;
+  const {month, tot, used, per}=computeMonth(mk);
+  document.getElementById("monthPill").textContent = monthLabel(mk);
+
+  const W=n(month.weeksInMonth);
+  const expected = used>0 ? (used/W) : 0.01;
+  const target = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+  const done = (month.kpiMode==="sales") ? tot.fact.sales : tot.fact.tLeads;
+  const progress = target>0 ? (done/target) : 0;
+  const tone = (progress < expected*0.85) ? "bad" : (progress < expected*1.05 ? "warn" : "good");
+
+  const kpisEl=document.getElementById("kpis");
+  kpisEl.innerHTML="";
+  const kpiName = month.kpiMode==="sales" ? "Продажі" : "Цільові";
+  kpisEl.appendChild(kpiCard(`План місяця • ${kpiName}`, month.kpiMode==="sales"? fmt.int(month.planSales) : fmt.int(month.planTLeads), "Ціль KPI"));
+  kpisEl.appendChild(kpiCard("Факт зараз • KPI", fmt.num(done,2), `Тижнів заповнено: ${used}/${W}`, tone));
+  kpisEl.appendChild(kpiCard("Прогноз до кінця • KPI", fmt.num(month.kpiMode==="sales"? tot.fore.sales : tot.fore.tLeads,2), "Run-rate + сезонність", tone));
+  kpisEl.appendChild(kpiCard("Бюджет • План / Факт", `${fmt.uah(month.planBudget)} / ${fmt.uah(tot.fact.budget)}`, "Контроль витрат", tone));
+  kpisEl.appendChild(kpiCard("CPL (прогноз)", fmt.uah(tot.fore.cpl), "Ціна ліда", tone));
+  kpisEl.appendChild(kpiCard("CQL (прогноз)", fmt.uah(tot.fore.cql), "Ціна цільового", tone));
+  kpisEl.appendChild(kpiCard("CPS (прогноз)", fmt.uah(tot.fore.cps), "Ціна продажу", tone));
+  kpisEl.appendChild(kpiCard("Якість (факт/прогноз)", `${fmt.pct01(tot.fact.q)} / ${fmt.pct01(tot.fore.q)}`, "Цільові / ліди", tone));
+
+  const pace=document.getElementById("paceBadge");
+  pace.className="badge "+tone;
+  pace.innerHTML=`Темп: <b>${Math.round(progress*100)}%</b> (очікування: ${Math.round(expected*100)}%)`;
+
+  const bottle=document.getElementById("bottleBadge");
+  const b = diagnoseBottleneck(mk);
+  bottle.className="badge "+tone;
+  bottle.innerHTML=`Вузьке місце: <b>${b}</b>`;
+
+  const wb=document.getElementById("weekBadge");
+  wb.className="badge";
+  wb.innerHTML=`Тижні: <b>${used}/${W}</b> • Факт бюджет: <b>${fmt.uah(tot.fact.budget)}</b>`;
+
+  drawGroupedBars(
+    document.getElementById("chartMain").getContext("2d"),
+    ["План","Факт","Прогноз"],
+    [
+      {label:`KPI (${month.kpiMode==="sales"?"Продажі":"Цільові"})`, color:"rgba(255,204,102,.78)", data: month.kpiMode==="sales"
+        ? [tot.plan.sales, tot.fact.sales, tot.fore.sales]
+        : [tot.plan.tLeads, tot.fact.tLeads, tot.fore.tLeads]
+      },
+      {label:"Бюджет", color:"rgba(107,183,184,.85)", data:[n(month.planBudget), tot.fact.budget, tot.fore.budget]},
+    ],
+    "обсяг",
+    "План / Факт / Прогноз (KPI + Бюджет)"
+  );
+
+  drawFunnel(
+    document.getElementById("chartFunnel").getContext("2d"),
+    tot.plan, tot.fact, tot.fore,
+    "Воронка + ефективність"
+  );
+
+  drawChannelsChart(
+    document.getElementById("chartChannels").getContext("2d"),
+    per,
+    month.kpiMode,
+    "Канали: внесок у KPI (прогноз) + бюджет"
+  );
+
+  const hs=historySeries();
+  drawGroupedBars(
+    document.getElementById("chartHistory").getContext("2d"),
+    hs.labels,
+    [
+      {label:"KPI План", color:"rgba(107,183,184,.85)", data:hs.kpiPlan},
+      {label:"KPI Факт", color:"rgba(255,204,102,.78)", data:hs.kpiFact},
+      {label:"Бюджет План", color:"rgba(138,125,255,.75)", data:hs.bPlan},
+      {label:"Бюджет Факт", color:"rgba(255,107,122,.70)", data:hs.bFact},
+    ],
+    "значення",
+    "Історія: KPI і Бюджет (місяці)"
+  );
+
+  renderWeeklyConclusion(mk, tone);
+}
+
+function renderWeeklyConclusion(mk, tone){
+  const {month, tot, used, per}=computeMonth(mk);
+  const W=n(month.weeksInMonth);
+  const expected = used>0 ? (used/W) : 0.01;
+
+  const target = (month.kpiMode==="sales") ? n(month.planSales) : n(month.planTLeads);
+  const done = (month.kpiMode==="sales") ? tot.fact.sales : tot.fact.tLeads;
+  const progress = target>0 ? (done/target) : 0;
+
+  const kpiName = month.kpiMode==="sales" ? "продажі" : "цільові ліди";
+  const acts = [];
+
+  if(used===0){
+    acts.push("Спершу внеси факт хоча б за 1 тиждень. Без цього всі графіки — декорація.");
   } else {
-    msg += `<span class="pill">OK</span> <span class="goodText"><b>План продажів покривається очікувано.</b></span><br/>`;
+    if(progress < expected*0.85){
+      acts.push("Ти відстаєш системно. Рішення: або підняти ефективність, або перерозподілити залишок місяця.");
+      acts.push("Натисни: <b>Розрахувати корекцію</b>. Якщо там 'CR' — бюджет не лікує.");
+      acts.push("Зроби діагноз: CPL / Якість / CR — що саме зламалось. Без діагнозу ти просто палиш гроші.");
+    } else if(progress < expected*1.05){
+      acts.push("Ти близько до темпу. Головне — не зламати якість під масштабуванням.");
+      acts.push("План: +10–15% у найстабільніші канали, тільки якщо Quality не падає.");
+    } else {
+      acts.push("Ти попереду темпу. Не роздувай бюджет без потреби. Фіксуй повторюваність процесу.");
+      acts.push("Задача: стандартизувати (креативи/скрипт/контроль) — щоб темп не був випадковим.");
+    }
   }
-  msg += `Алгоритм ранжує канали по <span class="pill">ефективному CPS</span> (з урахуванням risk-штрафу). Якщо вимикаєш ризик — майже весь бюджет піде в найнижчий CPS канал, навіть якщо він “тонкий” по даних.`;
-  document.getElementById("optNotes").innerHTML = msg;
 
-  return res;
+  const score = per.map(x=>{
+    const cost = (month.kpiMode==="sales") ? x.fore.cps : x.fore.cql;
+    return {name:x.name, cost};
+  }).filter(x=>isFinite(x.cost)).sort((a,b)=>a.cost-b.cost).slice(0,3);
+  if(score.length){
+    acts.push(`Найкращі канали по ціні KPI (прогноз): <b>${score.map(s=>`${s.name} (${fmt.uah(s.cost)})`).join(", ")}</b>.`);
+  }
+
+  const b = diagnoseBottleneck(mk);
+  let operational = "";
+  if(b.startsWith("CPL")){
+    operational = `
+      <b>Фокус тижня:</b> CPL.<br>
+      • 5–10 нових креативів/варіацій на ключові канали.<br>
+      • Прибрати все, що дає CPL > середнього на 30%.<br>
+      • Перевірити структуру кампаній, гео, плейсменти, частоту, UTM/сайт.`;
+  } else if(b.startsWith("Якість")){
+    operational = `
+      <b>Фокус тижня:</b> Якість.<br>
+      • Уточнити офер і “відсів” (питання у формі, кваліфікація, ціновий якор).<br>
+      • Відсікти аудиторії, які дають “дешево, але сміття”.<br>
+      • Зафіксувати стандарт: що таке “цільовий лід” (1 сторінка).`;
+  } else if(b.startsWith("CR")){
+    operational = `
+      <b>Фокус тижня:</b> Продажі (CR).<br>
+      • Швидкість відповіді ≤ 5 хв (контроль).<br>
+      • Скрипт кваліфікації (5 питань) + чіткі наступні кроки.<br>
+      • 20 записаних дзвінків на рев’ю + правки офера/заперечень.`;
+  } else {
+    operational = `<b>Фокус тижня:</b> внеси факт і зроби корекцію.`;
+  }
+
+  const box=document.getElementById("weeklyConclusionBox");
+  box.innerHTML = `
+    <b>Підсумок:</b> KPI <b>${kpiName}</b> виконано на <b>${Math.round(progress*100)}%</b>, очікувано на цьому етапі <b>${Math.round(expected*100)}%</b>.<br><br>
+    <b>Що робити:</b><br>
+    • ${acts.join("<br>• ")}<br><br>
+    ${operational}
+  `;
 }
 
-function applyOptToPlan(res){
-  for (const name of CHANNELS){
-    const ch = state.channels[name];
-    const a = res.alloc[name];
-    ch.plan.budget = a ? a.budget : 0;
-    ch.plan.leads  = a ? a.leads : 0;
-    ch.plan.qualityPct = toNum(ch.last.qualityPct);
-    ch.plan.convPct    = toNum(ch.last.convPct);
-  }
+/* =========================================================
+   10) SETTINGS TAB
+========================================================= */
+function renderSettings(){
+  const mk=state.activeMonth;
+  const box=document.getElementById("settingsBox");
+  box.innerHTML="";
+
+  const wrap=document.createElement("div");
+  wrap.className="sheetWrap";
+
+  const table=document.createElement("table");
+  table.className="sheet";
+  table.style.minWidth="980px";
+
+  const cols=["Канал","Ліміт лідів/міс","CPL базовий","Quality базова","CR базовий","Сезонність"];
+  const thead=document.createElement("thead");
+  const trh=document.createElement("tr");
+  cols.forEach(t=>{const th=document.createElement("th"); th.textContent=t; trh.appendChild(th);});
+  thead.appendChild(trh);
+  table.appendChild(thead);
+
+  const tbody=document.createElement("tbody");
+  GROUPS.forEach(g=>{
+    const tr=document.createElement("tr");
+    const base=BASE_MODEL[g.key];
+
+    const td0=document.createElement("td"); td0.textContent=g.name; tr.appendChild(td0);
+    const td1=document.createElement("td"); td1.style.padding="10px 10px"; td1.textContent=fmt.int(base.maxLeads); tr.appendChild(td1);
+    const td2=document.createElement("td"); td2.style.padding="10px 10px"; td2.textContent=fmt.uah(base.cpl); tr.appendChild(td2);
+    const td3=document.createElement("td"); td3.style.padding="10px 10px"; td3.textContent=Math.round(base.q*100)+"%"; tr.appendChild(td3);
+    const td4=document.createElement("td"); td4.style.padding="10px 10px"; td4.textContent=Math.round(base.cr*100)+"%"; tr.appendChild(td4);
+
+    const s=SEASON[mk]||{cpl:1,q:1,cr:1};
+    const td5=document.createElement("td"); td5.style.padding="10px 10px";
+    td5.innerHTML = `<span class="pill"><strong>CPL×${s.cpl.toFixed(2)}</strong><span class="muted">Q×${s.q.toFixed(2)} • CR×${s.cr.toFixed(2)}</span></span>`;
+    tr.appendChild(td5);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrap.appendChild(table);
+  box.appendChild(wrap);
+
+  const tip=document.createElement("div");
+  tip.className="noteBox";
+  tip.style.marginTop="10px";
+  tip.innerHTML = `
+    <b>Логіка:</b><br>
+    • CPL злетів → маркетинг (креатив/аудиторії/структура).<br>
+    • Quality впав → кваліфікація/офер/відсів.<br>
+    • CR впав → продажі. Бюджет часто шкодить, бо множить хаос.<br><br>
+    Редагування базової моделі тут не робиться (щоб не ламати систему). Змінюй планові CPL/Q/CR у вкладці “Ввід”.
+  `;
+  box.appendChild(tip);
 }
 
-/* Presets */
-function applyPreset(kind){
-  if (kind==="empty"){
-    state = defaultState();
+/* =========================================================
+   11) UI: tabs + selectors
+========================================================= */
+const TABS=[
+  {id:"dash", label:"Дашборд"},
+  {id:"input", label:"Ввід"},
+  {id:"old", label:"Old Optimizer"},
+  {id:"new", label:"New Optimizer"},
+  {id:"settings", label:"Налаштування"},
+];
+
+let activeTab="dash";
+
+function renderTabs(){
+  const el=document.getElementById("tabs");
+  el.innerHTML="";
+  TABS.forEach(t=>{
+    const b=document.createElement("div");
+    b.className="tab"+(activeTab===t.id?" active":"");
+    b.textContent=t.label;
+    b.onclick=()=>setTab(t.id);
+    el.appendChild(b);
+  });
+}
+
+function setTab(id){
+  activeTab=id;
+  document.getElementById("tab-dash").style.display = (id==="dash")?"":"none";
+  document.getElementById("tab-input").style.display = (id==="input")?"":"none";
+  document.getElementById("tab-old").style.display = (id==="old")?"":"none";
+  document.getElementById("tab-new").style.display = (id==="new")?"":"none";
+  document.getElementById("tab-settings").style.display = (id==="settings")?"":"none";
+  renderTabs();
+  renderAll(false);
+}
+
+function fillMonthSelect(){
+  const sel=document.getElementById("monthKey");
+  sel.innerHTML="";
+  state.historyOrder.forEach(k=>{
+    if(!state.months[k]) state.months[k]=emptyMonth(k);
+    const o=document.createElement("option");
+    o.value=k; o.textContent=monthLabel(k);
+    sel.appendChild(o);
+  });
+  sel.value=state.activeMonth;
+
+  const base=document.getElementById("newBaseMonth");
+  base.innerHTML="";
+  state.historyOrder.forEach(k=>{
+    const o=document.createElement("option");
+    o.value=k; o.textContent=monthLabel(k);
+    base.appendChild(o);
+  });
+  const idx=state.historyOrder.indexOf(state.activeMonth);
+  base.value = (idx>0? state.historyOrder[idx-1] : state.activeMonth);
+}
+
+function fillWeekSelect(){
+  const m=getMonth();
+  const wsel=document.getElementById("weekSel");
+  const cur=n(wsel.value||0);
+  wsel.innerHTML="";
+  for(let i=0;i<n(m.weeksInMonth);i++){
+    const o=document.createElement("option");
+    o.value=i; o.textContent=`Тиждень ${i+1}`;
+    wsel.appendChild(o);
+  }
+  wsel.value = String(clamp(cur,0,n(m.weeksInMonth)-1));
+}
+
+function syncHeaderControls(){
+  const m=getMonth();
+  document.getElementById("weeksInMonth").value=String(m.weeksInMonth);
+  document.getElementById("kpiMode").value=m.kpiMode;
+  document.getElementById("planSales").value=m.planSales;
+  document.getElementById("planTLeads").value=m.planTLeads;
+  document.getElementById("planBudget").value=m.planBudget;
+  document.getElementById("pasteModeLbl").textContent = state.pasteHot ? "УВІМК" : "ВИМК";
+}
+
+function renderAll(rebuildSheet){
+  fillMonthSelect();
+  fillWeekSelect();
+  syncHeaderControls();
+
+  if(activeTab==="dash") renderDash();
+  if(activeTab==="input"){
+    if(rebuildSheet) buildSheet();
+    else refreshSheetValues();
+  }
+  if(activeTab==="settings") renderSettings();
+  if(activeTab==="old") renderOldTab();
+  if(activeTab==="new") renderNewTab();
+
+  updateEditUI();
+  renderCloudPill();
+  lockInputs();
+}
+
+/* =========================================================
+   12) OLD/NEW renders
+========================================================= */
+let lastOldPlan=null;
+let lastNewPlan=null;
+
+function renderOldTab(){
+  const ctx=document.getElementById("chartOld").getContext("2d");
+  if(!lastOldPlan){
+    drawGroupedBars(ctx, ["—"], [{label:"—", color:"rgba(107,183,184,.85)", data:[0]}], "—", "Old Optimizer (нема розрахунку)");
     return;
   }
-  if (kind==="demo"){
-    state = defaultState();
-    const d = {
-      Google:  {b:90000, l:520, q:32, cr:10, maxL:800},
-      Meta:    {b:65000, l:410, q:28, cr:8,  maxL:700},
-      TikTok:  {b:30000, l:260, q:18, cr:6,  maxL:500},
-      ВЛ:      {b:15000, l:120, q:45, cr:14, maxL:200},
-      KM:      {b:12000, l:90,  q:40, cr:12, maxL:180},
-      Повторні:{b:0,     l:160, q:80, cr:25, maxL:220},
-      Інше:    {b:8000,  l:60,  q:22, cr:7,  maxL:120}
-    };
-    for (const name of CHANNELS){
-      const x = d[name] || {b:0,l:0,q:0,cr:0,maxL:0};
-      const ch = state.channels[name];
-      ch.last.budget = x.b;
-      ch.last.leads = x.l;
-      ch.last.qualityPct = x.q;
-      ch.last.convPct = x.cr;
-      ch.cap.maxLeads = x.maxL;
-      ch.plan.budget = 0;
-      ch.plan.leads = 0;
-      ch.plan.qualityPct = x.q;
-      ch.plan.convPct = x.cr;
-    }
-    state.channels.Google.weeks[1] = {budget:22000, leads:120, qualityPct:30, sales:4};
-    state.channels.Google.weeks[2] = {budget:21000, leads:115, qualityPct:33, sales:4};
-    state.channels.Meta.weeks[1] = {budget:16000, leads:95, qualityPct:26, sales:2};
-    state.channels.Meta.weeks[2] = {budget:17000, leads:105, qualityPct:28, sales:3};
-    state.channels.Повторні.weeks[1] = {budget:0, leads:40, qualityPct:80, sales:8};
-    state.channels.Повторні.weeks[2] = {budget:0, leads:45, qualityPct:80, sales:9};
+  const month=getMonth();
+  const labels=GROUPS.map(g=>g.name.replace(" (Search/PMax/YT)",""));
+  const budget=GROUPS.map(g=>n(lastOldPlan.add[g.key]?.budget));
+  const leads=GROUPS.map(g=>n(lastOldPlan.add[g.key]?.leads));
+  const kpi=GROUPS.map(g=>n(lastOldPlan.add[g.key]?.kpi));
+  drawGroupedBars(ctx, labels, [
+    {label:"Бюджет", color:"rgba(107,183,184,.85)", data:budget},
+    {label:"Ліди", color:"rgba(138,125,255,.75)", data:leads},
+    {label: month.kpiMode==="sales"?"KPI(продажі)":"KPI(цільові)", color:"rgba(255,204,102,.78)", data:kpi},
+  ], "значення", "Old Optimizer: план по каналах");
+}
+
+function renderNewTab(){
+  const ctx=document.getElementById("chartNew").getContext("2d");
+  if(!lastNewPlan){
+    drawGroupedBars(ctx, ["—"], [{label:"—", color:"rgba(107,183,184,.85)", data:[0]}], "—", "New Optimizer (нема розрахунку)");
+    return;
+  }
+  const month=getMonth();
+  const labels=GROUPS.map(g=>g.name.replace(" (Search/PMax/YT)",""));
+  const budget=GROUPS.map(g=>n(lastNewPlan.add[g.key]?.budget));
+  const leads=GROUPS.map(g=>n(lastNewPlan.add[g.key]?.leads));
+  const kpi=GROUPS.map(g=>n(lastNewPlan.add[g.key]?.kpi));
+  drawGroupedBars(ctx, labels, [
+    {label:"Бюджет", color:"rgba(107,183,184,.85)", data:budget},
+    {label:"Ліди", color:"rgba(138,125,255,.75)", data:leads},
+    {label: month.kpiMode==="sales"?"KPI(продажі)":"KPI(цільові)", color:"rgba(255,204,102,.78)", data:kpi},
+  ], "значення", "New Optimizer: план по каналах");
+}
+
+/* =========================================================
+   13) DIRTY + CLOUD PUSH/PULL
+========================================================= */
+let autoPushTimer=null;
+
+function markDirty(){
+  saveLocalState();
+  if(activeTab==="dash") renderDash();
+  if(activeTab==="input") refreshSheetValues();
+  if(activeTab==="old") renderOldTab();
+  if(activeTab==="new") renderNewTab();
+  if(activeTab==="settings") renderSettings();
+
+  if(isEditUnlocked()){
+    clearTimeout(autoPushTimer);
+    autoPushTimer=setTimeout(async ()=>{ await cloudPush(false); }, 2000);
   }
 }
 
-/* Local save/load */
-function saveToLocal(){ localStorage.setItem("marketing_hard_state_v1", JSON.stringify(state)); }
-function loadFromLocal(){
-  const raw = localStorage.getItem("marketing_hard_state_v1");
-  if (!raw) return;
-  try{ const p = JSON.parse(raw); if (p && p.channels) state=p; }catch(e){}
-}
-
-/* Google Sheets autosave (debounced) */
-let __gsSaveTimer = null;
-function gsAutosaveSchedule(){
-  clearTimeout(__gsSaveTimer);
-  __gsSaveTimer = setTimeout(() => {
-    saveToLocal();
-    gsSaveStateNoCors(state);
-  }, GS_AUTOSAVE_MS);
-}
-
-/* Render ALL */
-function renderAll(){
-  renderData();
-  renderPF();
-  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
-  gsAutosaveSchedule();
-}
-
-/* Init build tables + boot load */
-buildDataTable();
-buildPFTable();
-
-setSheetStatus("Звʼязок з Sheets: завантажую…");
-
-let remote = null;
-try {
-  remote = await gsLoadStateViaJSONP();
-  if (remote && remote.channels) {
-    setSheetStatus("Звʼязок з Sheets: OK (state знайдено).");
-  } else {
-    setSheetStatus("Звʼязок з Sheets: OK (порожньо). Перший сейв створить state.");
+async function cloudPull(showToast=true){
+  setCloudStatus("pulling","завантажую…");
+  const res=await cloudLoad();
+  if(res.ok && res.state){
+    state=res.state;
+    saveLocalState();
+    state.cloudMeta.lastPullAt=Date.now();
+    state.cloudMeta.status="ok";
+    state.cloudMeta.msg="pull ok";
+    saveLocalState();
+    renderAll(true);
+    if(showToast) toast("✅ Завантажено з Cloud.");
+    return true;
+  }else{
+    state.cloudMeta.status="error";
+    state.cloudMeta.msg="pull failed";
+    saveLocalState();
+    renderCloudPill();
+    if(showToast) toast("❌ Не вдалося завантажити з Cloud. Перевір доступ/скрипт.");
+    return false;
   }
-} catch (e) {
-  setSheetStatus("Звʼязок з Sheets: помилка. Працюємо локально.");
 }
 
-if (GS_PREFER_REMOTE_ON_BOOT && remote && remote.channels) {
-  state = remote;
-} else {
-  loadFromLocal();
-  if ((!state || !state.channels) && remote && remote.channels) state = remote;
-}
-
-renderAll();
-renderOptimizer(null);
-
-/* Actions */
-document.getElementById("applyPreset").addEventListener("click", ()=>{
-  applyPreset(document.getElementById("preset").value);
-  renderAll();
-  renderOptimizer(null);
-});
-document.getElementById("runOpt").addEventListener("click", ()=>{
-  const res = renderOptimizer(null);
-  window.__lastOpt = res;
-});
-document.getElementById("applyToPlan").addEventListener("click", ()=>{
-  const res = window.__lastOpt || optimizeAllocation({
-    budgetTotal: toNum(document.getElementById("planBudget").value),
-    salesTarget: toNum(document.getElementById("planSales").value),
-    riskMode: document.getElementById("riskMode").value,
-    stepMode: document.getElementById("stepMode").value,
-    CHANNELS: CHANNELS
-  });
-  if (res.reason){ alert(res.reason); return; }
-  applyOptToPlan(res);
-  renderAll();
-  alert("План оновлено з рекомендації оптимізатора.");
-});
-
-["forecastMode","weeksDone","weeksTotal"].forEach(id=>{
-  document.getElementById(id).addEventListener("change", ()=>{ renderAll(); });
-});
-
-document.getElementById("saveLocal").addEventListener("click", ()=>{ saveToLocal(); alert("Збережено (localStorage)."); });
-document.getElementById("loadLocal").addEventListener("click", ()=>{ loadFromLocal(); renderAll(); alert("Завантажено (localStorage)."); });
-document.getElementById("resetAll").addEventListener("click", ()=>{
-  if (confirm("Скинути все?")){ state = defaultState(); renderAll(); renderOptimizer(null); }
-});
-
-document.getElementById("exportJSON").addEventListener("click", ()=>{
-  document.getElementById("jsonBox").value = JSON.stringify(state, null, 2);
-});
-document.getElementById("importJSON").addEventListener("click", ()=>{
-  const raw = document.getElementById("jsonBox").value.trim();
-  if (!raw) return;
+async function cloudPush(showToast=true){
+  if(!isEditUnlocked()){
+    if(showToast) toast("🔒 Редагування заблоковано. Спершу введи пароль.");
+    return false;
+  }
+  setCloudStatus("pushing","зберігаю…");
   try{
-    const p = JSON.parse(raw);
-    if (p && p.channels){ state = p; renderAll(); alert("Імпортовано."); }
-    else alert("Невірна структура JSON.");
-  }catch(e){ alert("JSON невалідний."); }
-});
-document.getElementById("copyJSON").addEventListener("click", ()=>{
-  const box = document.getElementById("jsonBox");
-  box.select();
-  document.execCommand("copy");
-});
-
-document.getElementById("loadGS").addEventListener("click", async ()=>{
-  try{
-    const remote = await gsLoadStateViaJSONP();
-    if (remote && remote.channels){
-      state = remote;
-      renderAll();
-      alert("Підвантажено з Google Sheets.");
-    } else {
-      alert("У Sheets поки порожньо (state ще не створено).");
-    }
+    const res=await cloudSave(state);
+    state.cloudMeta.lastPushAt=Date.now();
+    state.cloudMeta.status = res.ok ? "ok" : "warn";
+    state.cloudMeta.msg = res.ok ? "push ok" : "push maybe";
+    saveLocalState();
+    renderCloudPill();
+    if(showToast) toast(res.ok ? "✅ Збережено в Cloud." : "⚠️ Відповідь Cloud неочевидна, але дані відправлено.");
+    return true;
   }catch(e){
-    alert("Не вдалося підвантажити з Sheets: " + e.message);
+    state.cloudMeta.status="error";
+    state.cloudMeta.msg="push failed";
+    saveLocalState();
+    renderCloudPill();
+    if(showToast) toast("❌ Помилка Cloud Push. Перевір Apps Script.");
+    return false;
   }
-});
-
-document.getElementById("saveGS").addEventListener("click", async ()=>{
-  const ok = await gsSaveStateNoCors(state);
-  alert(ok ? "Відправлено в Google Sheets." : "Не вдалося відправити в Sheets.");
-});
-
-} // end initApp
-
-/* Boot: if already authed in this session, start app */
-if (isAuthed()){
-  $("authGate").style.display = "none";
-  initApp();
-} else {
-  $("authGate").style.display = "flex";
 }
-</script>
 
+/* =========================================================
+   14) EXPORT / IMPORT / RESET / HELP
+========================================================= */
+function downloadJson(filename, obj){
+  const blob=new Blob([JSON.stringify(obj,null,2)], {type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url); a.remove();}, 50);
+}
+
+function doExport(){
+  downloadJson(`binokl_marketing_os_v3_${state.activeMonth}.json`, state);
+  toast("✅ Експортовано JSON.");
+}
+
+function doImport(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const obj=JSON.parse(reader.result);
+      const s=normalizeState(obj);
+      state=s;
+      saveLocalState();
+      renderAll(true);
+      toast("✅ Імпортовано JSON.");
+    }catch(e){
+      toast("❌ Не вдалося імпортувати. Файл не схожий на state.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function doReset(){
+  if(!isEditUnlocked()){
+    toast("🔒 Спершу розблокуй редагування.");
+    return;
+  }
+  if(!confirm("Скинути все локально до чистого state? (Cloud не чіпаємо)")) return;
+  state=freshState();
+  saveLocalState();
+  renderAll(true);
+  toast("✅ Локально скинуто.");
+}
+
+function showHelp(){
+  toast(
+    `<b>Як користуватись:</b><br>
+     1) Обери місяць → KPI → тижнів.<br>
+     2) Вкладка <b>Ввід</b>: заповни план по каналах + факт тижня (Ctrl+V з Sheets).<br>
+     3) На <b>Дашборді</b>: дивись темп/вузьке місце, і натискай <b>Розрахувати корекцію</b>.<br>
+     4) <b>Old</b> — сухий baseline. <b>New</b> — від факту минулого місяця (blending).<br>
+     5) Після змін (коли Edit ON) дані автозбережуться в Cloud через ~2 секунди.`,
+    6800
+  );
+}
+
+/* =========================================================
+   15) FIX + CALIBRATE
+========================================================= */
+let lastFix=null;
+
+function calcFix(){
+  const fx=weeklyFix();
+  lastFix=fx;
+  state.lastWeeklyFix = { at: Date.now(), month: state.activeMonth, ok: fx.ok, bottle: fx.bottle||null };
+  saveLocalState();
+  document.getElementById("fixBox").innerHTML = fx.ok ? fx.msg : ("❌ " + fx.msg);
+  toast("✅ Корекцію пораховано.");
+}
+
+function applyFix(){
+  if(!isEditUnlocked()){
+    toast("🔒 Спершу розблокуй редагування.");
+    return;
+  }
+  if(!lastFix || !lastFix.add){
+    toast("ℹ️ Нема чого застосовувати (або вузьке місце CR).");
+    return;
+  }
+  applyWeeklyFix(lastFix);
+  markDirty();
+  toast("✅ Корекцію застосовано в план.");
+}
+
+function autoCalibrateFromFact(){
+  if(!isEditUnlocked()){
+    toast("🔒 Спершу розблокуй редагування.");
+    return;
+  }
+  const mk=state.activeMonth;
+  const {month, used} = computeMonth(mk);
+  if(used<=0){
+    toast("ℹ️ Нема факту. Спершу внеси хоча б 1 тиждень.");
+    return;
+  }
+  if(!confirm("Автокалібрувати планові CPL/Q/CR по каналах з факту? Це може ламати модель, якщо факт “кривий”. Продовжити?")) return;
+
+  const m=getMonth();
+  m.groups.forEach(gr=>{
+    const f=sumFactForGroup(gr, used);
+    // мінімальні умови, щоб не робити дурню
+    if(f.leads>=15 && isFinite(f.cpl) && f.cpl>0) gr.planCPL = f.cpl;
+    if(f.leads>=20 && isFinite(f.q) && f.q>0) gr.planQ = clamp(f.q,0,1);
+    if(f.tLeads>=10 && isFinite(f.cr) && f.cr>0) gr.planCR = clamp(f.cr,0,1);
+  });
+
+  markDirty();
+  toast("✅ Автокалібрування виконано (обережно).");
+}
+
+/* =========================================================
+   16) PASSWORD MODAL
+========================================================= */
+function openPwModal(){
+  const m=document.getElementById("pwModal");
+  const inp=document.getElementById("pwInput");
+  inp.value="";
+  m.style.display="grid";
+  setTimeout(()=>inp.focus(), 0);
+}
+function closePwModal(){
+  document.getElementById("pwModal").style.display="none";
+}
+
+async function unlockWithPassword(){
+  const pw=document.getElementById("pwInput").value||"";
+  const h=await sha256Hex(pw);
+  if(h===ADMIN_PASSWORD_SHA256_HEX){
+    setEditUnlocked(true);
+    closePwModal();
+    toast("✅ Редагування увімкнено.");
+  }else{
+    toast("❌ Пароль неправильний.");
+  }
+}
+
+/* =========================================================
+   17) EVENTS
+========================================================= */
+function bindEvents(){
+  document.getElementById("btnHelp").onclick=showHelp;
+
+  document.getElementById("btnUnlock").onclick=()=>openPwModal();
+  document.getElementById("btnLock").onclick=()=>{
+    setEditUnlocked(false);
+    toast("🔒 Редагування вимкнено.");
+  };
+
+  document.getElementById("pwCancel").onclick=closePwModal;
+  document.getElementById("pwOk").onclick=unlockWithPassword;
+  document.getElementById("pwInput").addEventListener("keydown",(e)=>{
+    if(e.key==="Enter") unlockWithPassword();
+    if(e.key==="Escape") closePwModal();
+  });
+  document.getElementById("pwModal").addEventListener("click",(e)=>{
+    if(e.target.id==="pwModal") closePwModal();
+  });
+
+  document.getElementById("btnCloudPull").onclick=()=>cloudPull(true);
+  document.getElementById("btnCloudPush").onclick=()=>cloudPush(true);
+
+  document.getElementById("btnExport").onclick=doExport;
+  document.getElementById("btnImport").onclick=()=>document.getElementById("fileImport").click();
+  document.getElementById("fileImport").onchange=(e)=>{
+    const f=e.target.files && e.target.files[0];
+    if(f) doImport(f);
+    e.target.value="";
+  };
+
+  document.getElementById("btnReset").onclick=doReset;
+
+  document.getElementById("monthKey").onchange=(e)=>{
+    state.activeMonth=e.target.value;
+    saveLocalState();
+    // при зміні місяця: оновити списки тижнів/табличку
+    renderAll(true);
+  };
+
+  document.getElementById("weekSel").onchange=()=>{
+    if(activeTab==="input") refreshSheetValues();
+    if(activeTab==="dash") renderDash();
+  };
+
+  document.getElementById("weeksInMonth").onchange=(e)=>{
+    if(!isEditUnlocked()){ renderAll(true); return; }
+    const m=getMonth();
+    m.weeksInMonth = n(e.target.value)===5 ? 5 : 4;
+    // якщо тижнів стало менше — тримаємо селект у межах
+    fillWeekSelect();
+    markDirty();
+  };
+
+  document.getElementById("kpiMode").onchange=(e)=>{
+    if(!isEditUnlocked()){ renderAll(true); return; }
+    const m=getMonth();
+    m.kpiMode = e.target.value==="tlead" ? "tlead" : "sales";
+    markDirty();
+  };
+
+  document.getElementById("planSales").oninput=debounce((e)=>{
+    if(!isEditUnlocked()) return;
+    getMonth().planSales = Math.max(0, n(e.target.value));
+    markDirty();
+  },120);
+  document.getElementById("planTLeads").oninput=debounce((e)=>{
+    if(!isEditUnlocked()) return;
+    getMonth().planTLeads = Math.max(0, n(e.target.value));
+    markDirty();
+  },120);
+  document.getElementById("planBudget").oninput=debounce((e)=>{
+    if(!isEditUnlocked()) return;
+    getMonth().planBudget = Math.max(0, n(e.target.value));
+    markDirty();
+  },120);
+
+  document.getElementById("btnRecalc").onclick=()=>{
+    // просто примусово перемалювати + синхронізувати інпути в state, якщо unlocked
+    if(isEditUnlocked()){
+      const m=getMonth();
+      m.planSales = Math.max(0, n(document.getElementById("planSales").value));
+      m.planTLeads = Math.max(0, n(document.getElementById("planTLeads").value));
+      m.planBudget = Math.max(0, n(document.getElementById("planBudget").value));
+      m.kpiMode = document.getElementById("kpiMode").value==="tlead" ? "tlead" : "sales";
+      m.weeksInMonth = n(document.getElementById("weeksInMonth").value)===5 ? 5 : 4;
+      fillWeekSelect();
+      markDirty();
+    }else{
+      renderAll(false);
+      toast("ℹ️ Перерахунок — ок, але редагування вимкнено.");
+    }
+  };
+
+  // Weekly fix
+  document.getElementById("btnFixCalc").onclick=()=>calcFix();
+  document.getElementById("btnFixApply").onclick=()=>applyFix();
+
+  // Paste toggle
+  document.getElementById("btnPasteMode").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    state.pasteHot = !state.pasteHot;
+    saveLocalState();
+    syncHeaderControls();
+    toast(state.pasteHot ? "✅ Вставка увімкнена." : "✅ Вставка вимкнена.");
+  };
+
+  // Clear week
+  document.getElementById("btnClearWeek").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    const m=getMonth();
+    const w=currentWeekIndex();
+    if(!confirm(`Обнулити факт для тижня ${w+1}?`)) return;
+    m.groups.forEach(g=>{
+      g.weeks[w].budget=0;
+      g.weeks[w].leads=0;
+      g.weeks[w].q=g.planQ || BASE_MODEL[g.key].q;
+      g.weeks[w].sales=0;
+    });
+    markDirty();
+    refreshSheetValues();
+    toast("✅ Тиждень обнулено.");
+  };
+
+  // Old optimizer
+  document.getElementById("btnOldPreview").onclick=()=>{
+    lastOldPlan = oldOptimizerPlan(state.activeMonth);
+    const m=getMonth();
+    document.getElementById("oldBox").innerHTML =
+      `Ціль: <b>${fmt.num(lastOldPlan.targetKPI,2)}</b> KPI, бюджет-кап: <b>${m.planBudget>0?fmt.uah(m.planBudget):"нема"}</b>.<br>
+       План дає KPI≈<b>${fmt.num(lastOldPlan.total.kpi,2)}</b>, бюджет≈<b>${fmt.uah(lastOldPlan.total.budget)}</b>, лідів≈<b>${fmt.int(lastOldPlan.total.leads)}</b>.<br>
+       Залишок KPI (якщо >0): <b>${fmt.num(Math.max(0,lastOldPlan.needLeft),2)}</b>.`;
+    renderOldTab();
+    toast("✅ Old Optimizer пораховано.");
+  };
+  document.getElementById("btnOldApply").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    if(!lastOldPlan){ toast("ℹ️ Спершу натисни “Порахувати”."); return; }
+    applyPlanToMonth(lastOldPlan);
+    markDirty();
+    if(activeTab==="input") refreshSheetValues();
+    toast("✅ Old план застосовано.");
+  };
+
+  // New optimizer
+  document.getElementById("btnNewPreview").onclick=()=>{
+    const base=document.getElementById("newBaseMonth").value || state.activeMonth;
+    const blend=document.getElementById("blendMode").value || "70_30";
+    lastNewPlan = newOptimizerPlan(state.activeMonth, base, blend);
+    const m=getMonth();
+    document.getElementById("newBox").innerHTML =
+      `База: <b>${monthLabel(base)}</b>, змішування: <b>${blend}</b>.<br>
+       Ціль KPI: <b>${fmt.num(lastNewPlan.targetKPI,2)}</b>, бюджет-кап: <b>${m.planBudget>0?fmt.uah(m.planBudget):"нема"}</b>.<br>
+       План дає KPI≈<b>${fmt.num(lastNewPlan.total.kpi,2)}</b>, бюджет≈<b>${fmt.uah(lastNewPlan.total.budget)}</b>, лідів≈<b>${fmt.int(lastNewPlan.total.leads)}</b>.`;
+    renderNewTab();
+    toast("✅ New Optimizer пораховано.");
+  };
+  document.getElementById("btnNewApply").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    if(!lastNewPlan){ toast("ℹ️ Спершу натисни “Порахувати”."); return; }
+    applyPlanToMonth(lastNewPlan);
+    markDirty();
+    if(activeTab==="input") refreshSheetValues();
+    toast("✅ New план застосовано.");
+  };
+
+  // Quick apply from Input tab
+  document.getElementById("btnPlanOld").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    lastOldPlan = oldOptimizerPlan(state.activeMonth);
+    applyPlanToMonth(lastOldPlan);
+    markDirty();
+    refreshSheetValues();
+    toast("✅ Old Optimizer застосовано у план.");
+  };
+  document.getElementById("btnPlanNew").onclick=()=>{
+    if(!isEditUnlocked()){ toast("🔒 Спершу розблокуй редагування."); return; }
+    const base=document.getElementById("newBaseMonth").value || state.activeMonth;
+    const blend=document.getElementById("blendMode").value || "70_30";
+    lastNewPlan = newOptimizerPlan(state.activeMonth, base, blend);
+    applyPlanToMonth(lastNewPlan);
+    markDirty();
+    refreshSheetValues();
+    toast("✅ New Optimizer застосовано у план.");
+  };
+
+  // Calibrate
+  document.getElementById("btnAutoCalibrate").onclick=autoCalibrateFromFact;
+}
+
+/* =========================================================
+   18) INIT
+========================================================= */
+function init(){
+  renderTabs();
+  renderAll(true);
+  bindEvents();
+  // легкий автопул при старті (без шуму)
+  cloudPull(false);
+}
+
+init();
+</script>
 </body>
 </html>
